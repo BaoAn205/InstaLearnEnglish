@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">InstaLearn</string>
+    <string name="app_logo_description">InstaLearn App Logo</string>
+    <string name="app_avatar_description">User Avatar</string>
+    <string name="login_app_name">InstaLearn</string>
+    <string name="slogan">Master English, one post at a time</string>
+    <string name="hint_full_name">Full Name</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="get_started">GET STARTED</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="sign_in">Sign In</string>
+
+    <string name="beginner_mode">⚡ Beginner Mode</string>
+    <string name="spot_grammar_error">Spot the Grammar Error! 🔵</string>
+    <string name="tap_on_words">Tap on words you think are incorrect</string>
+    <string name="username_sarah">sarah_travels</string>
+    <string name="likes_sarah">234 likes</string>
+    <string name="post_caption_sarah">Watching the sunset at the beach, it were absolutely beautiful! 🌅</string>
+    <string name="view_comments_sarah">View all 12 comments</string>
+    <string name="username_travelgram">TravelGram</string>
+    <string name="likes_travelgram">972 likes</string>
+    <string name="post_caption_travelgram">We are planning a trip for Europe next month. I am so exciting!</string>
+    <string name="profile_picture_description">Profile Picture</string>
+    <string name="post_image_description">Post Image</string>
+    <string name="like_button_description">Like Button</string>
+    <string name="comment_button_description">Comment Button</string>
+    <string name="save_button_description">Save Button</string>
+
+    <string name="bottom_nav_home">Home</string>
+    <string name="bottom_nav_dictionary">Dictionary</string>
+    <string name="bottom_nav_flashcards">Flashcards</string>
+    <string name="bottom_nav_profile">Profile</string>
+</resources>

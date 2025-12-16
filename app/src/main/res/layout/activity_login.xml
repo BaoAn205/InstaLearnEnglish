@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#673AB7"
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp">
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/ic_instalean_logo"
+        android:background="@drawable/circle_white_background"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/app_logo_description" />
+
+    <TextView
+        android:id="@+id/tv_app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/login_app_name"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_logo" />
+
+    <TextView
+        android:id="@+id/tv_slogan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/slogan"
+        android:textColor="#E1BEE7"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_app_name" />
+
+    <EditText
+        android:id="@+id/et_full_name"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/login_edittext_background"
+        android:hint="@string/hint_full_name"
+        android:textColorHint="#E1BEE7"
+        android:textColor="@android:color/white"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:textSize="18sp"
+        android:inputType="textPersonName"
+        android:autofillHints="name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_slogan" />
+
+    <EditText
+        android:id="@+id/et_email"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/login_edittext_background"
+        android:hint="@string/hint_email"
+        android:textColorHint="#E1BEE7"
+        android:textColor="@android:color/white"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:textSize="18sp"
+        android:inputType="textEmailAddress"
+        android:autofillHints="emailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_full_name" />
+
+    <EditText
+        android:id="@+id/et_password"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/login_edittext_background"
+        android:hint="@string/hint_password"
+        android:textColorHint="#E1BEE7"
+        android:textColor="@android:color/white"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:textSize="18sp"
+        android:inputType="textPassword"
+        android:autofillHints="password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_email" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_get_started"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/get_started"
+        android:textColor="#673AB7"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:backgroundTint="@android:color/white"
+        app:cornerRadius="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_password" />
+
+    <TextView
+        android:id="@+id/tv_sign_in_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/already_have_account"
+        android:textColor="#E1BEE7"
+        app:layout_constraintEnd_toStartOf="@+id/tv_sign_in_link"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_get_started" />
+
+    <TextView
+        android:id="@+id/tv_sign_in_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_in"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_sign_in_prompt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_sign_in_prompt" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
