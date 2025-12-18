@@ -4,27 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
-    tools:context="com.example.instalearn.MainActivity">
+    android:background="@drawable/home_background"
+    tools:context=".MainActivity">
 
+    <!-- Top Bar (Đã đổi màu Tím cho đồng bộ) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="#9C27B0"
         android:paddingStart="16dp"
-        android:paddingTop="12dp"
+        android:paddingTop="16dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="12dp"
+        android:paddingBottom="16dp"
+        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/iv_app_logo"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_instalean_logo"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/app_logo"
+            android:background="@drawable/circle_white_background"
+            android:padding="2dp"
             android:contentDescription="@string/app_logo_description"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -34,10 +38,10 @@
             android:id="@+id/tv_app_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="12dp"
             android:text="@string/app_name"
-            android:textColor="@android:color/black"
-            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/iv_app_logo"
             app:layout_constraintTop_toTopOf="parent"
@@ -46,310 +50,420 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="8dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="4dp"
+            android:paddingStart="12dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="6dp"
             android:text="@string/beginner_mode"
             android:textColor="#673AB7"
             android:textSize="12sp"
+            android:textStyle="bold"
             android:background="@drawable/rounded_badge_background"
+            android:backgroundTint="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ScrollView
-        android:id="@+id/scroll_view_content"
+    <!-- Tab Selector (Đã chỉnh thành khung đẹp, quý tộc) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_tab_selector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="6dp"
+        app:strokeColor="#D1C4E9"
+        app:strokeWidth="1dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@+id/top_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/tab_selector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tab_study_space"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:text="Study Space"
+                android:textColor="#673AB7"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:background="?attr/selectableItemBackground"/>
+
+            <!-- Đường kẻ dọc phân cách nhỏ -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#F3E5F5"/>
+
+            <TextView
+                android:id="@+id/tab_new_feed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:text="News Feed"
+                android:textColor="#757575"
+                android:textStyle="normal"
+                android:textSize="16sp"
+                android:background="?attr/selectableItemBackground"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Content Container -->
+    <FrameLayout
+        android:id="@+id/content_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/top_bar"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/card_tab_selector"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation">
 
-        <LinearLayout
+        <!-- Study Space Content (Placeholder) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_study_space"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:visibility="gone">
+            <!-- Xóa background tạm để hiển thị background chính của activity -->
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_grammar_task"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Study Space\nComing Soon"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#673AB7"
+                android:background="@drawable/rounded_corner_background"
+                android:backgroundTint="#FFFFFF"
+                android:padding="32dp"
+                android:elevation="4dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- News Feed Content -->
+        <ScrollView
+            android:id="@+id/layout_new_feed"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:cardBackgroundColor="#673AB7"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_grammar_task"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    app:cardBackgroundColor="#673AB7"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/spot_grammar_error"
+                            android:textColor="@android:color/white"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tap_on_words"
+                            android:textColor="#E1BEE7"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Post 1: Sarah -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:paddingBottom="12dp"
+                    android:background="@android:color/white"
+                    android:elevation="2dp">
+
+                    <ImageView
+                        android:id="@+id/iv_profile_pic_sarah"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="12dp"
+                        android:src="@drawable/ic_profile_avatar_sarah"
+                        android:background="@drawable/circle_white_background"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:src="@tools:sample/avatars"
+                        android:contentDescription="@string/profile_picture_description"/>
 
                     <TextView
+                        android:id="@+id/tv_username_sarah"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/spot_grammar_error"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:layout_marginStart="12dp"
+                        android:text="@string/username_sarah"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toEndOf="@+id/iv_profile_pic_sarah"
+                        app:layout_constraintTop_toTopOf="@+id/iv_profile_pic_sarah"
+                        app:layout_constraintBottom_toBottomOf="@+id/iv_profile_pic_sarah"/>
+
+                    <ImageView
+                        android:id="@+id/iv_post_image_sarah"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/image_sunset_beach"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/iv_profile_pic_sarah"
+                        tools:src="@tools:sample/backgrounds/scenic"
+                        android:contentDescription="@string/post_image_description"/>
+
+                    <LinearLayout
+                        android:id="@+id/action_bar_sarah"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        app:layout_constraintTop_toBottomOf="@+id/iv_post_image_sarah"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <ImageButton
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/ic_heart_outline"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/like_button_description"/>
+
+                        <ImageButton
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:layout_marginStart="20dp"
+                            android:src="@drawable/ic_comment_outline"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/comment_button_description"/>
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1"/>
+
+                        <ImageButton
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/ic_bookmark_outline"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/save_button_description"/>
+                    </LinearLayout>
 
                     <TextView
+                        android:id="@+id/tv_likes_count_sarah"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/likes_sarah"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/action_bar_sarah" />
+
+                    <TextView
+                        android:id="@+id/tv_caption_sarah"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="@string/post_caption_sarah"
+                        android:textColor="@android:color/black"
+                        android:lineSpacingExtra="2dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_likes_count_sarah" />
+
+                    <TextView
+                        android:id="@+id/tv_view_comments_sarah"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/view_comments_sarah"
+                        android:textColor="#9E9E9E"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_caption_sarah" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Post 2: Travelgram -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingBottom="12dp"
+                    android:background="@android:color/white"
+                    android:elevation="2dp">
+
+                    <ImageView
+                        android:id="@+id/iv_profile_pic_travelgram"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="12dp"
+                        android:src="@drawable/ic_profile_avatar_travelgram"
+                        android:background="@drawable/circle_white_background"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:src="@tools:sample/avatars"
+                        android:contentDescription="@string/profile_picture_description"/>
+
+                    <TextView
+                        android:id="@+id/tv_username_travelgram"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/tap_on_words"
-                        android:textColor="#E1BEE7"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                        android:layout_marginStart="12dp"
+                        android:text="@string/username_travelgram"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toEndOf="@+id/iv_profile_pic_travelgram"
+                        app:layout_constraintTop_toTopOf="@+id/iv_profile_pic_travelgram"
+                        app:layout_constraintBottom_toBottomOf="@+id/iv_profile_pic_travelgram"/>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:paddingBottom="8dp"
-                android:background="@android:color/white">
-
-                <ImageView
-                    android:id="@+id/iv_profile_pic_sarah"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_profile_avatar_sarah"
-                    android:background="@drawable/circle_white_background"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@tools:sample/avatars"
-                    android:contentDescription="@string/profile_picture_description"/>
-
-                <TextView
-                    android:id="@+id/tv_username_sarah"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/username_sarah"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/iv_profile_pic_sarah"
-                    app:layout_constraintTop_toTopOf="@+id/iv_profile_pic_sarah"
-                    app:layout_constraintBottom_toBottomOf="@+id/iv_profile_pic_sarah"/>
-
-                <ImageView
-                    android:id="@+id/iv_post_image_sarah"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:scaleType="centerCrop"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/image_sunset_beach"
-                    app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/iv_profile_pic_sarah"
-                    tools:src="@tools:sample/backgrounds/scenic"
-                    android:contentDescription="@string/post_image_description"/>
-
-                <LinearLayout
-                    android:id="@+id/action_bar_sarah"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/iv_post_image_sarah"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                    <ImageButton
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_heart_outline"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/like_button_description"/>
-
-                    <ImageButton
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="16dp"
-                        android:src="@drawable/ic_comment_outline"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/comment_button_description"/>
-
-                    <View
+                    <ImageView
+                        android:id="@+id/iv_post_image_travelgram"
                         android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/image_eiffel_tower"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/iv_profile_pic_travelgram"
+                        tools:src="@tools:sample/backgrounds/scenic"
+                        android:contentDescription="@string/post_image_description"/>
 
-                    <ImageButton
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_bookmark_outline"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/save_button_description"/>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tv_likes_count_sarah"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/likes_sarah"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/action_bar_sarah" />
-
-                <TextView
-                    android:id="@+id/tv_caption_sarah"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/post_caption_sarah"
-                    android:textColor="@android:color/black"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_likes_count_sarah" />
-
-                <TextView
-                    android:id="@+id/tv_view_comments_sarah"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/view_comments_sarah"
-                    android:textColor="#A9A9A9"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_caption_sarah" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:paddingBottom="8dp"
-                android:background="@android:color/white">
-
-                <ImageView
-                    android:id="@+id/iv_profile_pic_travelgram"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_profile_avatar_travelgram"
-                    android:background="@drawable/circle_white_background"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@tools:sample/avatars"
-                    android:contentDescription="@string/profile_picture_description"/>
-
-                <TextView
-                    android:id="@+id/tv_username_travelgram"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/username_travelgram"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/iv_profile_pic_travelgram"
-                    app:layout_constraintTop_toTopOf="@+id/iv_profile_pic_travelgram"
-                    app:layout_constraintBottom_toBottomOf="@+id/iv_profile_pic_travelgram"/>
-
-                <ImageView
-                    android:id="@+id/iv_post_image_travelgram"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:scaleType="centerCrop"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/image_eiffel_tower"
-                    app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/iv_profile_pic_travelgram"
-                    tools:src="@tools:sample/backgrounds/scenic"
-                    android:contentDescription="@string/post_image_description"/>
-
-                <LinearLayout
-                    android:id="@+id/action_bar_travelgram"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/iv_post_image_travelgram"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                    <ImageButton
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_heart_outline"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/like_button_description"/>
-
-                    <ImageButton
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="16dp"
-                        android:src="@drawable/ic_comment_outline"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/comment_button_description"/>
-
-                    <View
+                    <LinearLayout
+                        android:id="@+id/action_bar_travelgram"
                         android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        app:layout_constraintTop_toBottomOf="@+id/iv_post_image_travelgram"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
 
-                    <ImageButton
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_bookmark_outline"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/save_button_description"/>
-                </LinearLayout>
+                        <ImageButton
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/ic_heart_outline"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/like_button_description"/>
 
-                <TextView
-                    android:id="@+id/tv_likes_count_travelgram"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/likes_travelgram"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/action_bar_travelgram" />
+                        <ImageButton
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:layout_marginStart="20dp"
+                            android:src="@drawable/ic_comment_outline"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/comment_button_description"/>
 
-                <TextView
-                    android:id="@+id/tv_caption_travelgram"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/post_caption_travelgram"
-                    android:textColor="@android:color/black"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_likes_count_travelgram" />
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                        <ImageButton
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/ic_bookmark_outline"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/save_button_description"/>
+                    </LinearLayout>
 
-        </LinearLayout>
-    </ScrollView>
+                    <TextView
+                        android:id="@+id/tv_likes_count_travelgram"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/likes_travelgram"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/action_bar_travelgram" />
+
+                    <TextView
+                        android:id="@+id/tv_caption_travelgram"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="@string/post_caption_travelgram"
+                        android:textColor="@android:color/black"
+                        android:lineSpacingExtra="2dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_likes_count_travelgram" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

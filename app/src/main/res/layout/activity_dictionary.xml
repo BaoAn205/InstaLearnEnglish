@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
+
+    <!-- Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#9C27B0"
+        android:padding="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dictionary_title"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_edittext_background"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawablePadding="8dp"
+            android:hint="@string/search_hint"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/header_container"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Recent Searches -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/recent_searches"
+                android:textColor="#757575"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="12dp">
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/word_beautiful"
+                    android:padding="16dp"
+                    android:background="@drawable/rounded_corner_background"
+                    android:drawableEnd="@drawable/ic_book_outline"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="@android:color/black"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/word_amazing"
+                    android:padding="16dp"
+                    android:background="@drawable/rounded_corner_background"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="@android:color/black"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/word_recommend"
+                    android:padding="16dp"
+                    android:background="@drawable/rounded_corner_background"
+                    android:textColor="@android:color/black"/>
+            </LinearLayout>
+
+            <!-- Popular Words -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/popular_words"
+                android:textColor="#757575"
+                android:textSize="14sp"
+                android:layout_marginTop="32dp"/>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:layout_marginTop="12dp">
+
+                <TextView
+                    android:text="@string/word_beautiful"
+                    android:background="@drawable/rounded_badge_background"
+                    android:padding="8dp"
+                    android:textColor="#9C27B0"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"/>
+                <TextView
+                    android:text="@string/word_amazing"
+                    android:background="@drawable/rounded_badge_background"
+                    android:padding="8dp"
+                    android:textColor="#9C27B0"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"/>
+                <TextView
+                    android:text="@string/word_atmosphere"
+                    android:background="@drawable/rounded_badge_background"
+                    android:padding="8dp"
+                    android:textColor="#9C27B0"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"/>
+                <TextView
+                    android:text="@string/word_recommend"
+                    android:background="@drawable/rounded_badge_background"
+                    android:padding="8dp"
+                    android:textColor="#9C27B0"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"/>
+                <TextView
+                    android:text="@string/word_energy"
+                    android:background="@drawable/rounded_badge_background"
+                    android:padding="8dp"
+                    android:textColor="#9C27B0"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"/>
+                 <TextView
+                    android:text="@string/word_definitely"
+                    android:background="@drawable/rounded_badge_background"
+                    android:padding="8dp"
+                    android:textColor="#9C27B0"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"/>
+            </GridLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:itemIconTint="@color/bottom_nav_color_selector"
+        app:itemTextColor="@color/bottom_nav_color_selector"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
