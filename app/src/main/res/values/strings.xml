@@ -7,9 +7,18 @@
     <string name="hint_full_name">Full Name</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
-    <string name="get_started">GET STARTED</string>
+    <string name="get_started">Get Started</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="sign_in">Sign In</string>
+
+    <!-- Authentication Strings -->
+    <string name="btn_sign_in">SIGN IN</string>
+    <string name="msg_dont_have_account">Don\'t have an account?</string>
+    <string name="action_sign_up">Sign Up</string>
+    <string name="error_empty_fields">Please fill in all fields</string>
+    <string name="error_login_failed">Invalid Email or Password</string>
+    <string name="success_registration">Account created successfully!</string>
+    <string name="success_login">Welcome back!</string>
 
     <string name="beginner_mode">⚡ Beginner Mode</string>
     <string name="spot_grammar_error">Spot the Grammar Error! 🔵</string>
@@ -27,8 +36,55 @@
     <string name="comment_button_description">Comment Button</string>
     <string name="save_button_description">Save Button</string>
 
+    <!-- Bottom Navigation -->
     <string name="bottom_nav_home">Home</string>
     <string name="bottom_nav_dictionary">Dictionary</string>
     <string name="bottom_nav_flashcards">Flashcards</string>
     <string name="bottom_nav_profile">Profile</string>
+
+    <!-- Dictionary Screen -->
+    <string name="dictionary_title">Dictionary</string>
+    <string name="search_hint">Search for a word...</string>
+    <string name="recent_searches">Recent Searches</string>
+    <string name="popular_words">Popular Words</string>
+    <string name="word_beautiful">beautiful</string>
+    <string name="word_amazing">amazing</string>
+    <string name="word_recommend">recommend</string>
+    <string name="word_atmosphere">atmosphere</string>
+    <string name="word_energy">energy</string>
+    <string name="word_definitely">definitely</string>
+
+    <!-- Flashcards Screen -->
+    <string name="my_vocabulary">My Vocabulary</string>
+    <string name="vocabulary_subtitle">Your saved words will appear here</string>
+    <string name="no_saved_words">No saved words yet</string>
+    <string name="vocabulary_empty_message">Start saving words from the Dictionary to build your personal vocabulary collection!</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile</string>
+    <string name="user_name_display">ad</string>
+    <string name="user_level">🌱 Beginner Learner</string>
+    <string name="your_progress">Your Progress</string>
+    <string name="words_learned_label">Words Learned</string>
+    <string name="errors_found_label">Errors Found</string>
+    <string name="day_streak_label">Day Streak</string>
+    <string name="achievements_label">Achievements</string>
+    <string name="achievements_section_title">Achievements</string>
+    
+    <string name="achievement_first_steps">First Steps</string>
+    <string name="achievement_first_steps_desc">Complete your first lesson</string>
+    <string name="achievement_word_master">Word Master</string>
+    <string name="achievement_word_master_desc">Save 10 words to vocabulary</string>
+    <string name="achievement_grammar_pro">Grammar Pro</string>
+    <string name="achievement_grammar_pro_desc">Find 20 grammar errors</string>
+    <string name="achievement_week_warrior">Week Warrior</string>
+    <string name="achievement_week_warrior_desc">Maintain a 7-day streak</string>
+    <string name="achievement_perfect_score">Perfect Score</string>
+    <string name="achievement_perfect_score_desc">Get 100% on any quiz</string>
+    
+    <string name="learning_stats">Learning Stats</string>
+    <string name="weekly_goal">Weekly Goal</string>
+    <string name="grammar_accuracy">Grammar Accuracy</string>
+    <string name="vocabulary_growth">Vocabulary Growth</string>
+
 </resources>
