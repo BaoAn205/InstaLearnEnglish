@@ -7,7 +7,7 @@
     android:background="@drawable/home_background"
     tools:context=".MainActivity">
 
-    <!-- Top Bar (Đã đổi màu Tím cho đồng bộ) -->
+    <!-- Top Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_bar"
         android:layout_width="0dp"
@@ -66,7 +66,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Tab Selector (Đã chỉnh thành khung đẹp, quý tộc) -->
+    <!-- Tab Selector -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_tab_selector"
         android:layout_width="0dp"
@@ -103,7 +103,6 @@
                 android:textSize="16sp"
                 android:background="?attr/selectableItemBackground"/>
 
-            <!-- Đường kẻ dọc phân cách nhỏ -->
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
@@ -138,38 +137,114 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation">
 
-        <!-- Study Space Content (Placeholder) -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- Study Space Content: The Journey Map -->
+        <ScrollView
             android:id="@+id/layout_study_space"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
-            <!-- Xóa background tạm để hiển thị background chính của activity -->
-
-            <TextView
-                android:layout_width="wrap_content"
+            android:visibility="visible">
+            
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Study Space\nComing Soon"
-                android:gravity="center"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#673AB7"
-                android:background="@drawable/rounded_corner_background"
-                android:backgroundTint="#FFFFFF"
-                android:padding="32dp"
-                android:elevation="4dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                android:paddingBottom="50dp">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <!-- The map.png Background -->
+                <ImageView
+                    android:id="@+id/iv_map_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="1000dp" 
+                    android:src="@drawable/map"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Connecting Line 1 -->
+                <View
+                    android:id="@+id/line1"
+                    android:layout_width="4dp"
+                    android:layout_height="0dp"
+                    android:background="#99FFFFFF"
+                    app:layout_constraintStart_toStartOf="@+id/station1"
+                    app:layout_constraintEnd_toEndOf="@+id/station1"
+                    app:layout_constraintTop_toBottomOf="@+id/station1"
+                    app:layout_constraintBottom_toTopOf="@+id/station2"/>
+
+                <!-- Station 1: Luggage Prep -->
+                <ImageButton
+                    android:id="@+id/station1"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="40dp"
+                    android:background="@drawable/journey_station_background"
+                    android:src="@drawable/ic_suitcase"
+                    android:padding="18dp"
+                    android:scaleType="fitCenter"
+                    android:enabled="true"
+                    android:elevation="4dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_station1_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chuẩn bị hành lý"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:shadowColor="#000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/station1"
+                    app:layout_constraintStart_toStartOf="@+id/station1"
+                    app:layout_constraintEnd_toEndOf="@+id/station1" />
+
+                <!-- Station 2: Airport -->
+                <ImageButton
+                    android:id="@+id/station2"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="100dp"
+                    android:background="@drawable/journey_station_background"
+                    android:src="@drawable/ic_airplane"
+                    android:padding="18dp"
+                    android:scaleType="fitCenter"
+                    android:enabled="false"
+                    android:elevation="4dp"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_station1_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_station2_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sân bay"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:shadowColor="#000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/station2"
+                    app:layout_constraintStart_toStartOf="@+id/station2"
+                    app:layout_constraintEnd_toEndOf="@+id/station2" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
 
         <!-- News Feed Content -->
         <ScrollView
             android:id="@+id/layout_new_feed"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="#FAFAFA"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"

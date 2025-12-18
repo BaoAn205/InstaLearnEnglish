@@ -19,6 +19,8 @@
     <string name="error_login_failed">Invalid Email or Password</string>
     <string name="success_registration">Account created successfully!</string>
     <string name="success_login">Welcome back!</string>
+    <string name="action_logout">Log Out</string>
+    <string name="settings_title">Settings</string>
 
     <string name="beginner_mode">⚡ Beginner Mode</string>
     <string name="spot_grammar_error">Spot the Grammar Error! 🔵</string>
