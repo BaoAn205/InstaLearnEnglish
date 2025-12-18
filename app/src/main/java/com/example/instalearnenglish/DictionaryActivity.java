@@ -23,10 +23,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instalearnenglish.model.Definition;
 import com.example.instalearnenglish.model.Meaning;
+import com.example.instalearnenglish.model.MyMemoryResponse;
 import com.example.instalearnenglish.model.Phonetic;
 import com.example.instalearnenglish.model.Word;
 import com.example.instalearnenglish.remote.DictionaryApiService;
 import com.example.instalearnenglish.remote.RetrofitClient;
+import com.example.instalearnenglish.remote.TranslationApiClient;
+import com.example.instalearnenglish.remote.TranslationApiService;
 import com.example.instalearnenglish.util.SearchHistoryManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -56,11 +59,12 @@ public class DictionaryActivity extends AppCompatActivity implements RecentSearc
 
     // Result View Components
     private ImageButton btnBackToSearch, resultBtnPlayAudio;
-    private TextView resultTvWord, resultTvPhonetic;
+    private TextView resultTvWord, resultTvPhonetic, tvVietnameseMeaning;
     private LinearLayout resultLlMeaningsContainer;
     private String audioUrl;
 
-    private DictionaryApiService apiService;
+    private DictionaryApiService dictionaryApiService;
+    private TranslationApiService translationApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,11 +91,13 @@ public class DictionaryActivity extends AppCompatActivity implements RecentSearc
         resultBtnPlayAudio = findViewById(R.id.result_btn_play_audio);
         resultTvWord = findViewById(R.id.result_tv_word);
         resultTvPhonetic = findViewById(R.id.result_tv_phonetic);
+        tvVietnameseMeaning = findViewById(R.id.tv_vietnamese_meaning);
         resultLlMeaningsContainer = findViewById(R.id.result_ll_meanings_container);
     }
 
     private void initializeServices() {
-        apiService = RetrofitClient.getRetrofitInstance().create(DictionaryApiService.class);
+        dictionaryApiService = RetrofitClient.getRetrofitInstance().create(DictionaryApiService.class);
+        translationApiService = TranslationApiClient.getRetrofitInstance().create(TranslationApiService.class);
         searchHistoryManager = new SearchHistoryManager(this);
     }
 
@@ -146,7 +152,7 @@ public class DictionaryActivity extends AppCompatActivity implements RecentSearc
     }
 
     private void searchWord(String word) {
-        apiService.getWordDefinition(word).enqueue(new Callback<List<Word>>() {
+        dictionaryApiService.getWordDefinition(word).enqueue(new Callback<List<Word>>() {
             @Override
             public void onResponse(Call<List<Word>> call, Response<List<Word>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
@@ -168,10 +174,12 @@ public class DictionaryActivity extends AppCompatActivity implements RecentSearc
         showResultView();
         resultTvWord.setText(word.getWord());
 
+        // Reset previous results
         resultLlMeaningsContainer.removeAllViews();
         audioUrl = null;
         String phoneticText = "";
 
+        // Find and set phonetic text and audio URL
         if (word.getPhonetics() != null && !word.getPhonetics().isEmpty()) {
             for (Phonetic p : word.getPhonetics()) {
                 if (p.getText() != null && !p.getText().isEmpty()) {
@@ -189,6 +197,7 @@ public class DictionaryActivity extends AppCompatActivity implements RecentSearc
         resultTvPhonetic.setText(phoneticText);
         resultBtnPlayAudio.setVisibility(audioUrl != null && !audioUrl.isEmpty() ? View.VISIBLE : View.GONE);
 
+        // Display meanings and definitions
         if (word.getMeanings() != null) {
             for (Meaning meaning : word.getMeanings()) {
                 TextView tvPartOfSpeech = new TextView(this);
@@ -214,7 +223,29 @@ public class DictionaryActivity extends AppCompatActivity implements RecentSearc
                     }
                 }
             }
-        }      // TODO: Add logic to fetch and display Vietnamese meaning
+        }
+
+        // Fetch and display Vietnamese meaning
+        translateWordToVietnamese(word.getWord());
+    }
+
+    private void translateWordToVietnamese(String word) {
+        tvVietnameseMeaning.setText("Translating...");
+        translationApiService.getTranslation(word, "en|vi").enqueue(new Callback<MyMemoryResponse>() {
+            @Override
+            public void onResponse(Call<MyMemoryResponse> call, Response<MyMemoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getResponseData() != null) {
+                    tvVietnameseMeaning.setText(response.body().getResponseData().getTranslatedText());
+                } else {
+                    tvVietnameseMeaning.setText("[Translation not available]");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyMemoryResponse> call, Throwable t) {
+                tvVietnameseMeaning.setText("[Translation failed]");
+            }
+        });
     }
 
     private void playAudio() {
