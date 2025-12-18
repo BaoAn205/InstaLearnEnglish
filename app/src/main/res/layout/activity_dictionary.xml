@@ -37,6 +37,8 @@
             android:drawableStart="@android:drawable/ic_menu_search"
             android:drawablePadding="8dp"
             android:hint="@string/search_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:textColor="@android:color/black"
@@ -46,9 +48,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ScrollView
+    <!-- Main Content (Recent & Popular) -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/main_content_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@+id/header_container"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,39 +73,11 @@
                 android:textColor="#757575"
                 android:textSize="14sp" />
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_recent_searches"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="12dp">
-                
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/word_beautiful"
-                    android:padding="16dp"
-                    android:background="@drawable/rounded_corner_background"
-                    android:drawableEnd="@drawable/ic_book_outline"
-                    android:layout_marginBottom="12dp"
-                    android:textColor="@android:color/black"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/word_amazing"
-                    android:padding="16dp"
-                    android:background="@drawable/rounded_corner_background"
-                    android:layout_marginBottom="12dp"
-                    android:textColor="@android:color/black"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/word_recommend"
-                    android:padding="16dp"
-                    android:background="@drawable/rounded_corner_background"
-                    android:textColor="@android:color/black"/>
-            </LinearLayout>
+                android:layout_marginTop="12dp"/>
 
             <!-- Popular Words -->
             <TextView
@@ -116,50 +93,100 @@
                 android:layout_height="wrap_content"
                 android:columnCount="3"
                 android:layout_marginTop="12dp">
+                <!-- Popular words will be here -->
+            </GridLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Word Result View (Initially Gone) -->
+    <ScrollView
+        android:id="@+id/word_result_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FAFAFA"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/header_container"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+            
+            <ImageButton
+                android:id="@+id/btn_back_to_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_revert"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="#757575"
+                android:contentDescription="Back to search" />
+
+            <TextView
+                android:id="@+id/result_tv_word"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="@android:color/black"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                tools:text="Hello" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:text="@string/word_beautiful"
-                    android:background="@drawable/rounded_badge_background"
-                    android:padding="8dp"
+                    android:id="@+id/result_tv_phonetic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textColor="#9C27B0"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"/>
-                <TextView
-                    android:text="@string/word_amazing"
-                    android:background="@drawable/rounded_badge_background"
-                    android:padding="8dp"
-                    android:textColor="#9C27B0"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"/>
-                <TextView
-                    android:text="@string/word_atmosphere"
-                    android:background="@drawable/rounded_badge_background"
-                    android:padding="8dp"
-                    android:textColor="#9C27B0"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"/>
-                <TextView
-                    android:text="@string/word_recommend"
-                    android:background="@drawable/rounded_badge_background"
-                    android:padding="8dp"
-                    android:textColor="#9C27B0"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"/>
-                <TextView
-                    android:text="@string/word_energy"
-                    android:background="@drawable/rounded_badge_background"
-                    android:padding="8dp"
-                    android:textColor="#9C27B0"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"/>
-                 <TextView
-                    android:text="@string/word_definitely"
-                    android:background="@drawable/rounded_badge_background"
-                    android:padding="8dp"
-                    android:textColor="#9C27B0"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"/>
-            </GridLayout>
+                    android:textSize="18sp"
+                    tools:text="/həˈləʊ/" />
+
+                <ImageButton
+                    android:id="@+id/result_btn_play_audio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Play pronunciation"
+                    android:src="@android:drawable/ic_media_play"
+                    app:tint="#9C27B0" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Nghĩa Tiếng Việt"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tv_vietnamese_meaning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp"
+                tools:text="Xin chào"
+                android:text="[Chức năng dịch thuật sẽ được cập nhật sau]"/>
+
+            <LinearLayout
+                android:id="@+id/result_ll_meanings_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical" />
 
         </LinearLayout>
     </ScrollView>
