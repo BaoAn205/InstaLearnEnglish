@@ -3,22 +3,17 @@ package com.example.instalearnenglish;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,21 +21,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String JOURNEY_PREFS = "GoGlobalJourneyPrefs";
     private static final String KEY_CURRENT_LEVEL = "current_level";
 
-    // UI Components for Tabs
-    private TextView tabStudySpace;
-    private TextView tabNewFeed;
-    private View layoutStudySpace;
-    private View layoutNewFeed;
-
     // UI Components for The Journey Map
-    private ImageButton station1, station2;
-    private TextView tvStation1Title, tvStation2Title;
+    private ImageButton station1, station2, station3, station4, station5;
+    private TextView tvStation1Title, tvStation2Title, tvStation3Title, tvStation4Title, tvStation5Title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        
+
         // --- Window Insets for Edge-to-Edge --- //
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.top_bar), (v, insets) -> {
              Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -49,38 +38,27 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // --- Initialize Views --- //
-        initializeTabViews();
         initializeJourneyViews();
-        
+
         // --- Setup Listeners --- //
-        setupTabListeners();
         setupStationListeners();
         setupBottomNavigation();
-        
+
         // --- Initial UI State --- //
         updateJourneyUI(); // Update stations based on user progress
-        showStudySpace();  // Default to showing the Study Space tab
-    }
-
-    private void initializeTabViews() {
-        tabStudySpace = findViewById(R.id.tab_study_space);
-        tabNewFeed = findViewById(R.id.tab_new_feed);
-        layoutStudySpace = findViewById(R.id.layout_study_space);
-        layoutNewFeed = findViewById(R.id.layout_new_feed);
     }
 
     private void initializeJourneyViews() {
         station1 = findViewById(R.id.station1);
         station2 = findViewById(R.id.station2);
+        station3 = findViewById(R.id.station3);
+        station4 = findViewById(R.id.station4);
+        station5 = findViewById(R.id.station5);
         tvStation1Title = findViewById(R.id.tv_station1_title);
         tvStation2Title = findViewById(R.id.tv_station2_title);
-    }
-
-    private void setupTabListeners() {
-        if (tabStudySpace != null && tabNewFeed != null) {
-            tabStudySpace.setOnClickListener(v -> showStudySpace());
-            tabNewFeed.setOnClickListener(v -> showNewFeed());
-        }
+        tvStation3Title = findViewById(R.id.tv_station3_title);
+        tvStation4Title = findViewById(R.id.tv_station4_title);
+        tvStation5Title = findViewById(R.id.tv_station5_title);
     }
 
     private void setupStationListeners() {
@@ -98,6 +76,33 @@ public class MainActivity extends AppCompatActivity {
                  if (v.isEnabled()) {
                     Intent intent = new Intent(MainActivity.this, LessonActivity.class);
                     intent.putExtra("LEVEL", 2);
+                    startActivity(intent);
+                 }
+            });
+        }
+        if (station3 != null) {
+            station3.setOnClickListener(v -> {
+                 if (v.isEnabled()) {
+                    Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+                    intent.putExtra("LEVEL", 3);
+                    startActivity(intent);
+                 }
+            });
+        }
+        if (station4 != null) {
+            station4.setOnClickListener(v -> {
+                 if (v.isEnabled()) {
+                    Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+                    intent.putExtra("LEVEL", 4);
+                    startActivity(intent);
+                 }
+            });
+        }
+        if (station5 != null) {
+            station5.setOnClickListener(v -> {
+                 if (v.isEnabled()) {
+                    Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+                    intent.putExtra("LEVEL", 5);
                     startActivity(intent);
                  }
             });
@@ -135,39 +140,23 @@ public class MainActivity extends AppCompatActivity {
         int currentLevel = prefs.getInt(KEY_CURRENT_LEVEL, 1); // Default to level 1
 
         // Station 1
-        station1.setEnabled(currentLevel >= 1);
-        tvStation1Title.setTextColor(station1.isEnabled() ? Color.parseColor("#424242") : Color.parseColor("#BDBDBD"));
+        station1.setEnabled(true);
+        tvStation1Title.setTextColor(Color.parseColor("#FFFFFF"));
 
         // Station 2
-        station2.setEnabled(currentLevel >= 2);
-        tvStation2Title.setTextColor(station2.isEnabled() ? Color.parseColor("#424242") : Color.parseColor("#BDBDBD"));
+        station2.setEnabled(true);
+        tvStation2Title.setTextColor(Color.parseColor("#FFFFFF"));
 
-        // TODO: Add logic for more stations as you create them
-    }
+        // Station 3
+        station3.setEnabled(true);
+        tvStation3Title.setTextColor(Color.parseColor("#FFFFFF"));
 
-    private void showStudySpace() {
-        if (layoutStudySpace != null && layoutNewFeed != null) {
-            layoutStudySpace.setVisibility(View.VISIBLE);
-            layoutNewFeed.setVisibility(View.GONE);
+        // Station 4
+        station4.setEnabled(true);
+        tvStation4Title.setTextColor(Color.parseColor("#FFFFFF"));
 
-            tabStudySpace.setTextColor(Color.parseColor("#673AB7"));
-            tabStudySpace.setTypeface(null, Typeface.BOLD);
-
-            tabNewFeed.setTextColor(Color.parseColor("#757575"));
-            tabNewFeed.setTypeface(null, Typeface.NORMAL);
-        }
-    }
-
-    private void showNewFeed() {
-        if (layoutStudySpace != null && layoutNewFeed != null) {
-            layoutStudySpace.setVisibility(View.GONE);
-            layoutNewFeed.setVisibility(View.VISIBLE);
-
-            tabNewFeed.setTextColor(Color.parseColor("#673AB7"));
-            tabNewFeed.setTypeface(null, Typeface.BOLD);
-
-            tabStudySpace.setTextColor(Color.parseColor("#757575"));
-            tabStudySpace.setTypeface(null, Typeface.NORMAL);
-        }
+        // Station 5
+        station5.setEnabled(true);
+        tvStation5Title.setTextColor(Color.parseColor("#FFFFFF"));
     }
 }

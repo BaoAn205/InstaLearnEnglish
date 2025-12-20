@@ -16,15 +16,29 @@
             android:id="@+id/toolbar_lesson"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Chuẩn bị hành lý"
+            app:title="Khách sạn"
             app:navigationIcon="@drawable/ic_arrow_back" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout_lesson"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabMode="scrollable"
-            app:tabGravity="fill"/>
+            app:tabMode="fixed"
+            app:tabGravity="fill">
+
+            <com.google.android.material.tabs.TabItem
+                android:text="Tip" />
+
+            <com.google.android.material.tabs.TabItem
+                android:text="Vocab" />
+
+            <com.google.android.material.tabs.TabItem
+                android:text="Simulation" />
+
+            <com.google.android.material.tabs.TabItem
+                android:text="Game" />
+
+        </com.google.android.material.tabs.TabLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

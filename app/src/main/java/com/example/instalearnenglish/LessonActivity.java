@@ -2,51 +2,41 @@ package com.example.instalearnenglish;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 public class LessonActivity extends AppCompatActivity {
-
-    private MaterialToolbar toolbar;
-    private TabLayout tabLayout;
-    private ViewPager2 viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lesson);
 
-        toolbar = findViewById(R.id.toolbar_lesson);
-        tabLayout = findViewById(R.id.tab_layout_lesson);
-        viewPager = findViewById(R.id.view_pager_lesson);
+        int level = getIntent().getIntExtra("LEVEL", 1);
 
-        // Handle back button
-        toolbar.setNavigationOnClickListener(v -> finish());
+        int layoutId;
+        switch (level) {
+            case 1:
+                layoutId = R.layout.activity_lesson_station_1;
+                break;
+            case 2:
+                layoutId = R.layout.activity_lesson_station_2;
+                break;
+            case 3:
+                layoutId = R.layout.activity_lesson_station_3;
+                break;
+            case 4:
+                layoutId = R.layout.activity_lesson_station_4;
+                break;
+            case 5:
+                layoutId = R.layout.activity_lesson_station_5;
+                break;
+            default:
+                layoutId = R.layout.activity_lesson_station_1; // Fallback to a valid lesson layout
+                break;
+        }
+        setContentView(layoutId);
 
-        // Setup ViewPager with Adapter
-        LessonPagerAdapter adapter = new LessonPagerAdapter(this);
-        viewPager.setAdapter(adapter);
-
-        // Link TabLayout with ViewPager
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> {
-                    switch (position) {
-                        case 0:
-                            tab.setText("Mẹo");
-                            break;
-                        case 1:
-                            tab.setText("Từ vựng");
-                            break;
-                        case 2:
-                            tab.setText("Giả lập");
-                            break;
-                        case 3:
-                            tab.setText("Game");
-                            break;
-                    }
-                }
-        ).attach();
+        MaterialToolbar toolbar = findViewById(R.id.toolbar_lesson);
+        // Handle the back button
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 }
