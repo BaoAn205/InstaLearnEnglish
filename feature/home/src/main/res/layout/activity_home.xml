@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F4F8">
+
+    <!-- 1. Header Section -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/header_gradient_bg"
+        android:padding="20dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_user_avatar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@android:drawable/sym_def_app_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_top_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/CircleImage" />
+
+        <TextView
+            android:id="@+id/tv_greeting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Hi, Traveler!"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/iv_user_avatar"
+            app:layout_top_toTopOf="@id/iv_user_avatar" />
+
+        <TextView
+            android:id="@+id/tv_passport_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Level: Newbie Backpacker"
+            android:textColor="#E0E0E0"
+            app:layout_constraintStart_toStartOf="@id/tv_greeting"
+            app:layout_top_toBottomOf="@id/tv_greeting" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress_bar_journey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:progress="20"
+            app:indicatorColor="@android:color/holo_orange_light"
+            app:layout_constraintTop_toBottomOf="@id/iv_user_avatar"
+            app:trackColor="#40FFFFFF"
+            app:trackThickness="8dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 2. Body Section: Journey Map -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_top_toBottomOf="@id/header_section">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="50dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1000dp"
+                android:background="@drawable/bg_map_placeholder"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_station_5"
+                style="@style/StationNodeStyle"
+                android:layout_marginTop="80dp"
+                android:text="5"
+                app:icon="@android:drawable/ic_menu_gallery"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_top_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_station_4"
+                style="@style/StationNodeStyle"
+                android:layout_marginTop="100dp"
+                android:text="4"
+                app:icon="@android:drawable/ic_lock_idle_lock"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.8"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_top_toBottomOf="@id/btn_station_5" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_station_3"
+                style="@style/StationNodeStyle"
+                android:layout_marginTop="100dp"
+                android:text="3"
+                app:icon="@android:drawable/ic_lock_idle_lock"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_top_toBottomOf="@id/btn_station_4" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_station_2"
+                style="@style/StationNodeStyle"
+                android:layout_marginTop="100dp"
+                android:text="2"
+                app:icon="@android:drawable/ic_lock_idle_lock"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.8"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_top_toBottomOf="@id/btn_station_3" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_station_1"
+                style="@style/StationNodeStyle"
+                android:layout_marginTop="100dp"
+                android:text="1"
+                app:icon="@android:drawable/checkbox_on_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_top_toBottomOf="@id/btn_station_2" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- 3. Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_quick_tool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_dialog_info"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

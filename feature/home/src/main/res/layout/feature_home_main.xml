@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A5D6A7">
+
+    <!-- Header Section -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#9C27B0"
+        android:padding="16dp"
+        android:elevation="8dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvGreeting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="InstaLearn"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvPassportLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Level: Explorer"
+            android:textColor="#E1BEE7"
+            app:layout_constraintStart_toStartOf="@id/tvGreeting"
+            app:layout_constraintTop_toBottomOf="@id/tvGreeting" />
+            
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="200 pts"
+                android:textStyle="bold"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressBarJourney"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:progress="20"
+            app:indicatorColor="#FFB300"
+            app:layout_constraintTop_toBottomOf="@id/tvPassportLevel"
+            app:trackColor="#4DFFFFFF"
+            app:trackThickness="6dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Scrollable Journey Map -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintTop_toBottomOf="@id/headerSection">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Background Map with Path -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1500dp"
+                android:background="@drawable/bg_map_placeholder"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Stations in Z-shape (Bottom-up flow) -->
+            
+            <!-- Station 5 -->
+            <LinearLayout
+                android:id="@+id/layoutStation5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="60dp">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStation5"
+                    style="@style/StationNodeStyle"
+                    app:icon="@android:drawable/ic_menu_gallery" />
+                <TextView style="@style/StationLabelStyle" android:text="Ăn chơi" />
+            </LinearLayout>
+
+            <!-- Station 4 -->
+            <LinearLayout
+                android:id="@+id/layoutStation4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.8"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutStation5"
+                android:layout_marginTop="80dp">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStation4"
+                    style="@style/StationNodeStyle"
+                    app:icon="@android:drawable/ic_menu_view" />
+                <TextView style="@style/StationLabelStyle" android:text="Khách sạn" />
+            </LinearLayout>
+
+            <!-- Station 3 -->
+            <LinearLayout
+                android:id="@+id/layoutStation3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutStation4"
+                android:layout_marginTop="80dp">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStation3"
+                    style="@style/StationNodeStyle"
+                    app:icon="@android:drawable/ic_dialog_map" />
+                <TextView style="@style/StationLabelStyle" android:text="Di chuyển" />
+            </LinearLayout>
+
+            <!-- Station 2 -->
+            <LinearLayout
+                android:id="@+id/layoutStation2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.8"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutStation3"
+                android:layout_marginTop="80dp">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStation2"
+                    style="@style/StationNodeStyle"
+                    app:icon="@android:drawable/ic_menu_send" />
+                <TextView style="@style/StationLabelStyle" android:text="Sân bay" />
+            </LinearLayout>
+
+            <!-- Station 1 -->
+            <LinearLayout
+                android:id="@+id/layoutStation1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutStation2"
+                android:layout_marginTop="80dp"
+                android:layout_marginBottom="100dp"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStation1"
+                    style="@style/StationNodeStyle"
+                    app:icon="@android:drawable/ic_menu_agenda" />
+                <TextView style="@style/StationLabelStyle" android:text="Chuẩn bị" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@android:color/white"
+        app:itemIconTint="#9C27B0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabQuickTool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_dialog_info"
+        app:backgroundTint="#9C27B0"
+        app:tint="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

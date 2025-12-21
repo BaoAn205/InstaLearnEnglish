@@ -1,50 +1,52 @@
 # InstaLearnEnglish - Timeline Journey Project
 
-Dự án này được thiết kế theo cấu trúc Multi-module để hỗ trợ làm việc nhóm (Developer A, B, C) và tối ưu hóa cho AI Assistant.
+Dự án này được thiết kế theo cấu trúc **Multi-module (Modularization)** để hỗ trợ làm việc nhóm (Developer A, B, C) và tối ưu hóa cho AI Assistant.
+
+## ⚠️ QUY TẮC QUAN TRỌNG (IMPORTANT RULE)
+**TUYỆT ĐỐI KHÔNG làm việc trực tiếp trong module `:app`.** 
+Module `:app` chỉ đóng vai trò là "vỏ bọc" để khởi chạy và tích hợp các module khác. Toàn bộ logic, giao diện và tài nguyên **PHẢI** được đặt trong các module `:feature` hoặc `:core` tương ứng.
+
+---
 
 ## 📌 Phân chia nhiệm vụ (Team Roles)
 
 ### 👤 Developer A (Home & Station 1)
-- **Module:** `:feature:home`, `:feature:station1`
-- **Nhiệm vụ:**
-    - Phát triển giao diện bản đồ hành trình (Home Map).
-    - Quản lý trạng thái mở khóa trạm (`SharedPreferences`).
-    - Hoàn thiện nội dung Trạm 1: Chuẩn bị hành lý (Packing).
+- **Module chính:** `:feature:home`
+- **Nhiệm vụ:** 
+    - Phát triển giao diện bản đồ hành trình, Hệ thống Xác thực (Login/Register), Hồ sơ (Profile), và các công cụ học tập (Từ điển, Thẻ từ).
+- **Module nội dung:** `:feature:station1` (Trạm 1: Chuẩn bị hành lý).
 
 ### 👤 Developer B (Station 2 & 3)
-- **Module:** `:feature:station23`
-- **Nhiệm vụ:**
-    - Hoàn thiện nội dung Trạm 2: Tại Sân bay (At the Airport).
-    - Hoàn thiện nội dung Trạm 3: Di chuyển (Transportation).
+- **Module chính:** `:feature:station23`
+- **Nhiệm vụ:** Hoàn thiện toàn bộ nội dung, logic bài học cho Trạm 2 (Sân bay) và Trạm 3 (Di chuyển).
 
 ### 👤 Developer C (Station 4 & 5)
-- **Module:** `:feature:station45`
-- **Nhiệm vụ:**
-    - Hoàn thiện nội dung Trạm 4: Khách sạn (Accommodation).
-    - Hoàn thiện nội dung Trạm 5: Ăn uống & Mua sắm (Dining & Shopping).
+- **Module chính:** `:feature:station45`
+- **Nhiệm vụ:** Hoàn thiện toàn bộ nội dung, logic bài học cho Trạm 4 (Khách sạn) và Trạm 5 (Ăn uống & Mua sắm).
 
 ---
 
-## 🛠 Cấu trúc Module Hệ thống (Core Modules)
-*Dành cho tất cả mọi người cùng đóng góp và sử dụng chung:*
+## 🛠 Cấu trúc hệ thống (System Architecture)
 
-- **`:core:ui`**: Chứa các Custom View dùng chung (FlashcardView, ChatLayout, v.v.).
-- **`:core:data`**: Chứa Data Models (Station, VocabularyItem) và Repository.
-- **`:core:common`**: Chứa các Utils (TextToSpeech, MediaRecorder, Constants).
-- **`:app`**: Module chính dùng để khởi chạy và tích hợp các trạm lại với nhau.
+- **`:feature:home`**: Trung tâm điều khiển (Map, Auth, Profile, Tools).
+- **`:feature:stationX`**: Các module bài học độc lập (Nơi A, B, C làm việc chính).
+- **`:core:ui`**: Chứa các Custom View và Adapter dùng chung (ví dụ: `LessonPagerAdapter`).
+- **`:core:data`**: Chứa Models (Word, Station) và API Services (Retrofit).
+- **`:core:common`**: Chứa các lớp Tiện ích (Utils), Constants.
 
 ---
 
 ## 🤖 Hướng dẫn cho AI Assistant
-Khi làm việc trong dự án này, hãy tuân thủ các quy tắc sau:
-1. **Scope:** Chỉ chỉnh sửa code trong module được phân công (ví dụ: nếu bạn là AI của Developer B, chỉ tập trung vào `:feature:station23`).
-2. **Reuse:** Kiểm tra các thành phần UI trong `:core:ui` trước khi tạo View mới để đảm bảo tính đồng nhất.
-3. **Data:** Sử dụng các model trong `:core:data` để đồng bộ dữ liệu giữa các trạm.
-4. **Resources:** Đặt tên tài nguyên có tiền tố module (ví dụ: `st1_iv_backpack` thay vì `iv_backpack`) để tránh xung đột khi merge code trên GitHub.
+Khi bạn (AI) hỗ trợ lập trình viên trong dự án này, hãy tuân thủ:
+1. **Scope Limit:** Chỉ chỉnh sửa code trong module được phân công. Tuyệt đối không thêm Activity/Layout vào `:app`.
+2. **Resource Prefix:** Đặt tên resource có tiền tố module (ví dụ: `st45_iv_hotel` thay vì `iv_hotel`) để tránh xung đột khi merge Git.
+3. **Logic Reuse:** Luôn kiểm tra `:core:ui` và `:core:data` để sử dụng lại code có sẵn trước khi viết mới.
+4. **Binding Identity:** Sử dụng đúng lớp Binding của module (ví dụ: `FeatureStation1MainBinding`) để tránh lỗi nạp sai layout.
 
 ---
 
-## 🚀 Bắt đầu
-1. Clone dự án.
-2. Thực hiện `Gradle Sync`.
-3. Mở module tương ứng với vai trò của mình để bắt đầu code.
+## 🚀 Cách bắt đầu
+1. **Clone** dự án từ GitHub.
+2. Mở bằng Android Studio và thực hiện **Gradle Sync**.
+3. **Build -> Clean Project** để làm sạch cache cũ.
+4. Chọn đúng module phụ trách để bắt đầu code.

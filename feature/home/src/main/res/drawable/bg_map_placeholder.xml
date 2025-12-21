@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 1. Nền cỏ xanh mượt -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#A5D6A7"/>
+        </shape>
+    </item>
+    
+    <!-- 2. Giả lập các vùng nước xanh dương uốn lượn -->
+    <item android:top="50dp" android:left="-100dp" android:right="150dp" android:bottom="800dp">
+        <shape android:shape="oval">
+            <solid android:color="#81D4FA"/>
+        </shape>
+    </item>
+    <item android:top="600dp" android:left="200dp" android:right="-100dp" android:bottom="200dp">
+        <shape android:shape="oval">
+            <solid android:color="#81D4FA"/>
+        </shape>
+    </item>
+
+    <!-- 3. Giả lập các đồi cát/vùng đất vàng -->
+    <item android:top="300dp" android:left="250dp" android:right="20dp" android:bottom="600dp">
+        <shape android:shape="oval">
+            <solid android:color="#FFE082"/>
+        </shape>
+    </item>
+
+    <!-- 4. CON ĐƯỜNG TRẮNG UỐN LƯỢN (Quan trọng nhất) -->
+    <!-- Chúng ta dùng stroke dày và dash để tạo cảm giác đường đi phượt -->
+    <item android:top="100dp" android:bottom="100dp" android:left="40dp" android:right="40dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="15dp"
+                android:color="#FFFFFF"
+                android:dashWidth="40dp"
+                android:dashGap="10dp"/>
+            <corners android:radius="150dp"/>
+        </shape>
+    </item>
+</layer-list>
