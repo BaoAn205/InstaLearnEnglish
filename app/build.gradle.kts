@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    // Existing dependencies
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -47,14 +48,20 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // Import the Firebase BoM
+    // Firebase dependencies
     implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
-
-
-    // TODO: Add the dependencies for Firebase products you want to use
-    // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
 
+    // Feature module dependencies
+    implementation(project(":feature:home"))
+    implementation(project(":feature:station1"))
+    implementation(project(":feature:station23"))
+    implementation(project(":feature:station45"))
+
+    // Core module dependencies
+    implementation(project(":core:data"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:common"))
 }
