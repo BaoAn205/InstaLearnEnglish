@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         if (station1 != null) {
             station1.setOnClickListener(v -> {
                 if (v.isEnabled()) {
-                    Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ST1_LessonActivity.class);
                     intent.putExtra("LEVEL", 1);
                     startActivity(intent);
                 }
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         if (station2 != null) {
             station2.setOnClickListener(v -> {
                  if (v.isEnabled()) {
-                    Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ST1_LessonActivity.class);
                     intent.putExtra("LEVEL", 2);
                     startActivity(intent);
                  }
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         if (station3 != null) {
             station3.setOnClickListener(v -> {
                  if (v.isEnabled()) {
-                    Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ST1_LessonActivity.class);
                     intent.putExtra("LEVEL", 3);
                     startActivity(intent);
                  }
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         if (station4 != null) {
             station4.setOnClickListener(v -> {
                  if (v.isEnabled()) {
-                    Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ST1_LessonActivity.class);
                     intent.putExtra("LEVEL", 4);
                     startActivity(intent);
                  }
@@ -101,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         if (station5 != null) {
             station5.setOnClickListener(v -> {
                  if (v.isEnabled()) {
-                    Intent intent = new Intent(MainActivity.this, LessonActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ST1_LessonActivity.class);
                     intent.putExtra("LEVEL", 5);
                     startActivity(intent);
                  }
