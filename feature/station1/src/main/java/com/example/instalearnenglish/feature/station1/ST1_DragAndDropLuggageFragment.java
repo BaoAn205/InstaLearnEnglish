@@ -17,11 +17,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class ST1_DragAndDropLuggageFragment extends Fragment {
 
     private int correctDrops = 0;
     private int totalItems = 0;
     private ViewGroup itemsContainer;
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Nullable
     @Override
@@ -33,18 +41,19 @@ public class ST1_DragAndDropLuggageFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         itemsContainer = view.findViewById(R.id.items_to_drag_container);
 
         view.findViewById(R.id.carry_on_bin_container).setOnDragListener(new DragListener());
         view.findViewById(R.id.checked_luggage_bin_container).setOnDragListener(new DragListener());
 
-        // Existing items
+        // Setup items
         setupDraggableItem(view.findViewById(R.id.item_laptop));
         setupDraggableItem(view.findViewById(R.id.item_passport));
         setupDraggableItem(view.findViewById(R.id.item_water));
         setupDraggableItem(view.findViewById(R.id.item_scissors));
-
-        // New items
         setupDraggableItem(view.findViewById(R.id.item_tshirt));
         setupDraggableItem(view.findViewById(R.id.item_jacket));
         setupDraggableItem(view.findViewById(R.id.item_book));
@@ -70,10 +79,44 @@ public class ST1_DragAndDropLuggageFragment extends Fragment {
         });
     }
 
-    private void showWinDialog() {
+    private void checkAndAdvanceLevel() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            showWinDialog("You\'ve packed everything correctly!");
+            return;
+        }
+
+        DocumentReference userDocRef = db.collection("users").document(currentUser.getUid());
+        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                Long currentLevel = documentSnapshot.getLong("currentLevel");
+                if (currentLevel == null) currentLevel = 1L;
+
+                // Check if the user is on the level of this station (Station 1)
+                if (currentLevel == 1) {
+                    // Advance the user to the next level
+                    userDocRef.update("currentLevel", 2)
+                        .addOnSuccessListener(aVoid -> {
+                            String message = "You\'ve packed everything correctly!\n\nCongratulations, you\'ve unlocked Station 2!";
+                            showWinDialog(message);
+                        })
+                        .addOnFailureListener(e -> showWinDialog("You\'ve packed everything correctly!")); // Still show win dialog on failure
+                } else {
+                    // User has already passed this level
+                    showWinDialog("You\'ve packed everything correctly!");
+                }
+            } else {
+                showWinDialog("You\'ve packed everything correctly!");
+            }
+        }).addOnFailureListener(e -> showWinDialog("You\'ve packed everything correctly!"));
+    }
+
+    private void showWinDialog(String message) {
+        if (!isAdded() || getContext() == null) return; // Ensure fragment is still attached
+
         new AlertDialog.Builder(requireContext())
             .setTitle("Congratulations!")
-            .setMessage("You\'ve packed everything correctly!")
+            .setMessage(message)
             .setPositiveButton("Play Again", (dialog, which) -> resetGame())
             .setNegativeButton("Exit", (dialog, which) -> requireActivity().finish())
             .setCancelable(false)
@@ -99,7 +142,7 @@ public class ST1_DragAndDropLuggageFragment extends Fragment {
                     return true;
 
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    v.setBackgroundColor(Color.parseColor("#D1C4E9")); // Highlight color
+                    v.setBackgroundColor(Color.parseColor("#D1C4E9"));
                     return true;
 
                 case DragEvent.ACTION_DRAG_EXITED:
@@ -108,7 +151,6 @@ public class ST1_DragAndDropLuggageFragment extends Fragment {
 
                 case DragEvent.ACTION_DROP:
                     v.setBackgroundColor(Color.TRANSPARENT);
-
                     String correctBinTag = event.getClipData().getDescription().getLabel().toString();
                     String targetBinTag = (v.getId() == R.id.carry_on_bin_container) ? "carry_on" : "checked";
 
@@ -117,7 +159,8 @@ public class ST1_DragAndDropLuggageFragment extends Fragment {
                         draggedView.animate().alpha(0.0f).setDuration(300).withEndAction(() -> draggedView.setVisibility(View.GONE));
                         Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
                         if (correctDrops == totalItems) {
-                            showWinDialog();
+                            // Instead of calling showWinDialog directly, call the new method
+                            checkAndAdvanceLevel();
                         }
                     } else {
                         final Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);

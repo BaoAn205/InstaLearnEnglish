@@ -13,6 +13,7 @@ import com.example.instalearnenglish.feature.home.tools.DictionaryActivity;
 import com.example.instalearnenglish.feature.home.tools.FlashcardsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -24,43 +25,73 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            binding = FeatureHomeProfileBinding.inflate(getLayoutInflater());
-            setContentView(binding.getRoot());
+        binding = FeatureHomeProfileBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-            mAuth = FirebaseAuth.getInstance();
-            db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-            setupProfileData();
-            setupBottomNavigation();
-
-            binding.btnLogout.setOnClickListener(v -> {
-                mAuth.signOut();
-                Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Lỗi nạp Hồ sơ", Toast.LENGTH_SHORT).show();
-            finish();
-        }
+        setupBottomNavigation();
+        setupLogoutButton();
     }
 
-    private void setupProfileData() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            binding.tvUserEmail.setText(user.getEmail());
-            db.collection("users").document(user.getUid()).get()
-                .addOnSuccessListener(document -> {
-                    if (document != null && document.exists()) {
-                        String fullName = document.getString("fullName");
-                        binding.tvUserName.setText(fullName != null ? fullName : "Traveler");
-                    }
-                });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Fetch and display user data every time the activity is shown
+        fetchAndDisplayUserData();
+    }
+
+    private void fetchAndDisplayUserData() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            goToLogin();
+            return;
         }
+
+        binding.tvUserEmail.setText(currentUser.getEmail());
+
+        db.collection("users").document(currentUser.getUid()).get()
+            .addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    String fullName = documentSnapshot.getString("fullName");
+                    binding.tvUserName.setText(fullName != null ? fullName : "Traveler");
+
+                    Long currentLevel = documentSnapshot.getLong("currentLevel");
+                    binding.tvCurrentStation.setText(currentLevel != null ? String.valueOf(currentLevel) : "1");
+
+                    // Get and display the day streak
+                    Long dayStreak = documentSnapshot.getLong("dayStreak");
+                    binding.tvDayStreak.setText(dayStreak != null ? String.valueOf(dayStreak) : "1");
+
+                } else {
+                    // Default values if document doesn't exist
+                    binding.tvUserName.setText("Traveler");
+                    binding.tvCurrentStation.setText("1");
+                    binding.tvDayStreak.setText("1");
+                }
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(ProfileActivity.this, "Failed to load profile data.", Toast.LENGTH_SHORT).show();
+                binding.tvUserName.setText("Traveler");
+                binding.tvCurrentStation.setText("-");
+                binding.tvDayStreak.setText("-");
+            });
+    }
+
+    private void setupLogoutButton() {
+        binding.btnLogout.setOnClickListener(v -> {
+            mAuth.signOut();
+            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+            goToLogin();
+        });
+    }
+
+    private void goToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void setupBottomNavigation() {
@@ -68,9 +99,7 @@ public class ProfileActivity extends AppCompatActivity {
         binding.bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
-                Intent intent = new Intent(this, HomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(intent);
+                startActivity(new Intent(this, HomeActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.nav_dictionary) {
