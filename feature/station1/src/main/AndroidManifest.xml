@@ -4,6 +4,13 @@
         <activity
             android:name=".Station1Activity"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            android:exported="true" />
+
+        <!-- Add this activity block -->
+        <activity
+            android:name=".ST1_GameHostActivity"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
             android:exported="false" />
+
     </application>
 </manifest>
