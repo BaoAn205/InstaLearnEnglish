@@ -1,15 +1,41 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Folders and files created by Android Studio and Gradle.
+# This file should be in the project's root directory.
+
+# Built application files
+*.apk
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Build folders
+build/
+*/build/
+
+# Local configuration file (sdk path, etc)
 local.properties
+
+# IDE files and folders
+.gradle/
+.idea/
+captures/
+*.iml
+
+# Log files
+*.log
+
+# Keystore files
+*.jks
+*.keystore
+
+# External native build folder
+.externalNativeBuild/
+
+# C/C++ auto-generated files
+.cxx/
+
+# Google Services (original file is not required in VCS)
+google-services.json

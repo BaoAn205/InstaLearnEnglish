@@ -20,7 +20,6 @@
     <string name="success_registration">Account created successfully!</string>
     <string name="success_login">Welcome back!</string>
     <string name="action_logout">Log Out</string>
-    <string name="logout_button_text">Log Out</string>
     <string name="settings_title">Settings</string>
 
     <string name="beginner_mode">⚡ Beginner Mode</string>
@@ -89,5 +88,8 @@
     <string name="weekly_goal">Weekly Goal</string>
     <string name="grammar_accuracy">Grammar Accuracy</string>
     <string name="vocabulary_growth">Vocabulary Growth</string>
+
+    <!-- Added for logout button -->
+    <string name="logout_button_text">Logout</string>
 
 </resources>
