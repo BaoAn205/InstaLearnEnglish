@@ -65,21 +65,14 @@ public class HomeActivity extends AppCompatActivity {
         DocumentReference userDocRef = db.collection("users").document(currentUser.getUid());
 
         userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            // MẶC ĐỊNH MỞ KHÓA HẾT CÁC TRẠM ĐỂ TEST (Set level = 5)
+            updateJourneyUI(5L);
+            
             if (documentSnapshot != null && documentSnapshot.exists()) {
-                // Check and update day streak
                 checkAndUpdateDayStreak(documentSnapshot, userDocRef);
-
-                // Update journey UI
-                Long currentLevel = documentSnapshot.getLong("currentLevel");
-                updateJourneyUI(currentLevel != null ? currentLevel : 1L);
-
-            } else {
-                // If user document doesn't exist, treat as a new user
-                updateJourneyUI(1L);
             }
         }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Could not fetch user progress.", Toast.LENGTH_SHORT).show();
-            updateJourneyUI(1L);
+            updateJourneyUI(5L);
         });
     }
 
@@ -88,7 +81,6 @@ public class HomeActivity extends AppCompatActivity {
         Long dayStreak = snapshot.getLong("dayStreak");
 
         if (lastLoginTimestamp == null || dayStreak == null) {
-            // If fields are missing, initialize them
             Map<String, Object> initialStreak = new HashMap<>();
             initialStreak.put("dayStreak", 1L);
             initialStreak.put("lastLoginDate", new Date());
@@ -107,10 +99,7 @@ public class HomeActivity extends AppCompatActivity {
         boolean isSameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                             cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
 
-        if (isSameDay) {
-            // User already logged in today, do nothing.
-            return;
-        }
+        if (isSameDay) return;
 
         cal1.add(Calendar.DAY_OF_YEAR, 1);
         boolean isYesterday = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
@@ -118,10 +107,8 @@ public class HomeActivity extends AppCompatActivity {
 
         Map<String, Object> streakUpdate = new HashMap<>();
         if (isYesterday) {
-            // It's a consecutive day, increment streak
             streakUpdate.put("dayStreak", dayStreak + 1);
         } else {
-            // The streak is broken, reset to 1
             streakUpdate.put("dayStreak", 1L);
         }
         streakUpdate.put("lastLoginDate", today);
@@ -193,8 +180,10 @@ public class HomeActivity extends AppCompatActivity {
                     className = "com.example.instalearnenglish.feature.station23.Station23Activity";
                     break;
                 case 4:
+                    className = "com.example.instalearnenglish.feature.station45.Station4Activity";
+                    break;
                 case 5:
-                    className = "com.example.instalearnenglish.feature.station45.Station45Activity";
+                    className = "com.example.instalearnenglish.feature.station45.Station5Activity";
                     break;
                 default:
                     return;
