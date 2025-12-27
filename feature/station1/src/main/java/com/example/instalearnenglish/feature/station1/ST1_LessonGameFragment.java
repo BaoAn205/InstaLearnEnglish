@@ -7,26 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import java.util.List;
-import java.util.Map;
-
 public class ST1_LessonGameFragment extends Fragment {
 
     private LinearLayout gamesContainer;
-    private FirebaseFirestore db;
-    private String lessonId;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (getArguments() != null) {
-            lessonId = getArguments().getString("LESSON_ID");
-        }
         return inflater.inflate(R.layout.st1_fragment_lesson_game, container, false);
     }
 
@@ -34,35 +27,23 @@ public class ST1_LessonGameFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         gamesContainer = view.findViewById(R.id.games_container);
-        db = FirebaseFirestore.getInstance();
-        if (lessonId != null) {
-            loadGamesFromFirestore();
-        }
+        loadGames();
     }
 
-    private void loadGamesFromFirestore() {
-        db.collection("journey_content").document(lessonId)
-            .get()
-            .addOnSuccessListener(documentSnapshot -> {
-                if (getContext() == null || !documentSnapshot.exists()) return;
+    private void loadGames() {
+        if (getContext() == null) return;
+        gamesContainer.removeAllViews();
 
-                List<Map<String, Object>> gamesList = (List<Map<String, Object>>) documentSnapshot.get("games");
-
-                if (gamesList != null) {
-                    gamesContainer.removeAllViews();
-                    for (Map<String, Object> gameMap : gamesList) {
-                        ST1_Game ST1_Game = new ST1_Game();
-                        ST1_Game.setTitle((String) gameMap.get("title"));
-                        ST1_Game.setType((String) gameMap.get("type"));
-                        ST1_Game.setLevel((Long) gameMap.get("level"));
-
-                        addGameCardToView(ST1_Game);
-                    }
-                }
-            });
+        addGameCardToView(new ST1_Game("Packing Luggage", "DRAG_AND_DROP_LUGGAGE", "Drag items to the correct luggage."));
+        addGameCardToView(new ST1_Game("Prohibited Items Quiz", "QUIZ_PROHIBITED_ITEMS", "Test your knowledge on what you can and cannot bring."));
+        addGameCardToView(new ST1_Game("Guess My Trip", "GUESS_MY_TRIP", "Deduce the destination from the items listed."));
+        addGameCardToView(new ST1_Game("Emoji Packing Challenge", "EMOJI_PACKING", "Guess the items from the emojis and say them out loud."));
+        addGameCardToView(new ST1_Game("What’s in My Bag?", "WHATS_IN_MY_BAG", "Listen to the description and guess the item."));
+        addGameCardToView(new ST1_Game("Forgot Something!", "FORGOT_SOMETHING", "Memorize the items and find what's missing."));
+        addGameCardToView(new ST1_Game("Word → Image Match", "WORD_IMAGE_MATCH", "Match the word to the correct image."));
     }
 
-    private void addGameCardToView(ST1_Game ST1_Game) {
+    private void addGameCardToView(ST1_Game game) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View cardView = inflater.inflate(R.layout.st1_game_card_item, gamesContainer, false);
 
@@ -70,17 +51,45 @@ public class ST1_LessonGameFragment extends Fragment {
         TextView description = cardView.findViewById(R.id.game_description);
         View playButton = cardView.findViewById(R.id.play_button);
 
-        title.setText(ST1_Game.getTitle());
-        // You can decide how to display the other info
-        description.setText("Type: " + ST1_Game.getType() + " - Level: " + ST1_Game.getLevel());
+        title.setText(game.getTitle());
+        description.setText(game.getDescription());
 
         playButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), ST1_GameHostActivity.class);
-            intent.putExtra(ST1_GameHostActivity.EXTRA_GAME_TYPE, ST1_Game.getType());
-            intent.putExtra(ST1_GameHostActivity.EXTRA_GAME_TITLE, ST1_Game.getTitle());
-            startActivity(intent);
+            // Updated logic to check if game is implemented
+            if (game.getType().equals("DRAG_AND_DROP_LUGGAGE") || 
+                game.getType().equals("QUIZ_PROHIBITED_ITEMS") ||
+                game.getType().equals("GUESS_MY_TRIP") ||
+                game.getType().equals("EMOJI_PACKING") ||
+                game.getType().equals("WHATS_IN_MY_BAG") ||
+                game.getType().equals("FORGOT_SOMETHING") ||
+                game.getType().equals("WORD_IMAGE_MATCH")) {
+                
+                Intent intent = new Intent(getActivity(), ST1_GameHostActivity.class);
+                intent.putExtra(ST1_GameHostActivity.EXTRA_GAME_TYPE, game.getType());
+                intent.putExtra(ST1_GameHostActivity.EXTRA_GAME_TITLE, game.getTitle());
+                startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), game.getTitle() + " is coming soon!", Toast.LENGTH_SHORT).show();
+            }
         });
 
         gamesContainer.addView(cardView);
+    }
+
+    // Dummy Game class for this fragment
+    private static class ST1_Game {
+        private String title;
+        private String type;
+        private String description;
+
+        public ST1_Game(String title, String type, String description) {
+            this.title = title;
+            this.type = type;
+            this.description = description;
+        }
+
+        public String getTitle() { return title; }
+        public String getType() { return type; }
+        public String getDescription() { return description; }
     }
 }

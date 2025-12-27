@@ -122,7 +122,7 @@
                         android:columnCount="2"
                         android:layout_marginTop="16dp">
 
-                        <!-- Item 1 -->
+                        <!-- Words Learned -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -139,6 +139,7 @@
                                 app:tint="#9C27B0"
                                 android:contentDescription="@null"/>
                             <TextView
+                                android:id="@+id/tvWordsLearned" 
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
@@ -154,26 +155,27 @@
                                 android:textColor="#757575"/>
                         </LinearLayout>
 
-                        <!-- Item 2 -->
+                        <!-- Current Station -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_columnWeight="1"
                             android:orientation="vertical"
-                            android:background="#F3E5F5"
+                            android:background="#E8F5E9" 
                             android:padding="16dp"
                             android:layout_marginStart="8dp"
                             android:layout_marginBottom="16dp">
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/ic_flashcard_outline"
-                                app:tint="#9C27B0"
+                                android:src="@android:drawable/ic_dialog_map" 
+                                app:tint="#4CAF50"
                                 android:contentDescription="@null"/>
                             <TextView
+                                android:id="@+id/tvCurrentStation"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="12"
+                                android:text="1"
                                 android:textSize="20sp"
                                 android:textStyle="bold"
                                 android:textColor="#424242"
@@ -181,12 +183,12 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/errors_found_label"
+                                android:text="Current Station"
                                 android:textSize="12sp"
                                 android:textColor="#757575"/>
                         </LinearLayout>
 
-                        <!-- Item 3 -->
+                        <!-- Day Streak -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -202,6 +204,7 @@
                                 app:tint="#9C27B0"
                                 android:contentDescription="@null"/>
                             <TextView
+                                android:id="@+id/tvDayStreak"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="7"
@@ -217,7 +220,7 @@
                                 android:textColor="#757575"/>
                         </LinearLayout>
 
-                        <!-- Item 4 -->
+                        <!-- Achievements -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -233,6 +236,7 @@
                                 app:tint="#9C27B0"
                                 android:contentDescription="@null"/>
                             <TextView
+                                android:id="@+id/tvAchievements"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="5"

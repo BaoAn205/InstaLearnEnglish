@@ -1,56 +1,152 @@
 package com.example.instalearnenglish.feature.home;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.instalearnenglish.feature.home.R;
+import com.example.instalearnenglish.feature.home.auth.LoginActivity;
 import com.example.instalearnenglish.feature.home.profile.ProfileActivity;
 import com.example.instalearnenglish.feature.home.tools.DictionaryActivity;
 import com.example.instalearnenglish.feature.home.tools.FlashcardsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot; // <-- Import added here
+import com.google.firebase.Timestamp;
 
-public class  HomeActivity extends AppCompatActivity {
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-    // Constants for SharedPreferences
-    private static final String JOURNEY_PREFS = "GoGlobalJourneyPrefs";
-    private static final String KEY_CURRENT_LEVEL = "current_level";
+public class HomeActivity extends AppCompatActivity {
 
-    // UI Components for The Journey Map
     private ImageButton station1, station2, station3, station4, station5;
     private TextView tvStation1Title, tvStation2Title, tvStation3Title, tvStation4Title, tvStation5Title;
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // --- Window Insets for Edge-to-Edge --- //
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.top_bar), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), v.getPaddingBottom());
-            return insets;
-        });
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-        // --- Initialize Views --- //
         initializeJourneyViews();
-
-        // --- Setup Listeners --- //
         setupStationListeners();
         setupBottomNavigation();
+    }
 
-        // --- Initial UI State --- //
-        updateJourneyUI(); // Update stations based on user progress
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchUserProgressAndSetupUI();
+    }
+
+    private void fetchUserProgressAndSetupUI() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
+        DocumentReference userDocRef = db.collection("users").document(currentUser.getUid());
+
+        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                // Check and update day streak
+                checkAndUpdateDayStreak(documentSnapshot, userDocRef);
+
+                // Update journey UI
+                Long currentLevel = documentSnapshot.getLong("currentLevel");
+                updateJourneyUI(currentLevel != null ? currentLevel : 1L);
+
+            } else {
+                // If user document doesn't exist, treat as a new user
+                updateJourneyUI(1L);
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Could not fetch user progress.", Toast.LENGTH_SHORT).show();
+            updateJourneyUI(1L);
+        });
+    }
+
+    private void checkAndUpdateDayStreak(DocumentSnapshot snapshot, DocumentReference userDocRef) {
+        Timestamp lastLoginTimestamp = snapshot.getTimestamp("lastLoginDate");
+        Long dayStreak = snapshot.getLong("dayStreak");
+
+        if (lastLoginTimestamp == null || dayStreak == null) {
+            // If fields are missing, initialize them
+            Map<String, Object> initialStreak = new HashMap<>();
+            initialStreak.put("dayStreak", 1L);
+            initialStreak.put("lastLoginDate", new Date());
+            userDocRef.update(initialStreak);
+            return;
+        }
+
+        Date lastLoginDate = lastLoginTimestamp.toDate();
+        Date today = new Date();
+
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(lastLoginDate);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(today);
+
+        boolean isSameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+
+        if (isSameDay) {
+            // User already logged in today, do nothing.
+            return;
+        }
+
+        cal1.add(Calendar.DAY_OF_YEAR, 1);
+        boolean isYesterday = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                              cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+
+        Map<String, Object> streakUpdate = new HashMap<>();
+        if (isYesterday) {
+            // It's a consecutive day, increment streak
+            streakUpdate.put("dayStreak", dayStreak + 1);
+        } else {
+            // The streak is broken, reset to 1
+            streakUpdate.put("dayStreak", 1L);
+        }
+        streakUpdate.put("lastLoginDate", today);
+        userDocRef.update(streakUpdate);
+    }
+
+
+    private void updateJourneyUI(long currentLevel) {
+        updateStation(station1, tvStation1Title, 1, currentLevel);
+        updateStation(station2, tvStation2Title, 2, currentLevel);
+        updateStation(station3, tvStation3Title, 3, currentLevel);
+        updateStation(station4, tvStation4Title, 4, currentLevel);
+        updateStation(station5, tvStation5Title, 5, currentLevel);
+    }
+
+    private void updateStation(View stationButton, TextView stationTitle, int stationLevel, long userLevel) {
+        if (stationLevel <= userLevel) {
+            stationButton.setEnabled(true);
+            stationButton.setAlpha(1.0f);
+            stationTitle.setAlpha(1.0f);
+        } else {
+            stationButton.setEnabled(false);
+            stationButton.setAlpha(0.5f);
+            stationTitle.setAlpha(0.5f);
+        }
     }
 
     private void initializeJourneyViews() {
@@ -67,41 +163,21 @@ public class  HomeActivity extends AppCompatActivity {
     }
 
     private void setupStationListeners() {
-        if (station1 != null) {
-            station1.setOnClickListener(v -> {
-                if (v.isEnabled()) {
-                    openLesson(1);
-                }
-            });
-        }
-        if (station2 != null) {
-            station2.setOnClickListener(v -> {
-                if (v.isEnabled()) {
-                    openLesson(2);
-                }
-            });
-        }
-        if (station3 != null) {
-            station3.setOnClickListener(v -> {
-                if (v.isEnabled()) {
-                    openLesson(3);
-                }
-            });
-        }
-        if (station4 != null) {
-            station4.setOnClickListener(v -> {
-                if (v.isEnabled()) {
-                    openLesson(4);
-                }
-            });
-        }
-        if (station5 != null) {
-            station5.setOnClickListener(v -> {
-                if (v.isEnabled()) {
-                    openLesson(5);
-                }
-            });
-        }
+        station1.setOnClickListener(v -> {
+            if (v.isEnabled()) openLesson(1);
+        });
+        station2.setOnClickListener(v -> {
+            if (v.isEnabled()) openLesson(2);
+        });
+        station3.setOnClickListener(v -> {
+            if (v.isEnabled()) openLesson(3);
+        });
+        station4.setOnClickListener(v -> {
+            if (v.isEnabled()) openLesson(4);
+        });
+        station5.setOnClickListener(v -> {
+            if (v.isEnabled()) openLesson(5);
+        });
     }
 
     private void openLesson(int level) {
@@ -123,19 +199,12 @@ public class  HomeActivity extends AppCompatActivity {
                 default:
                     return;
             }
-
             intent.setClassName(this, className);
             intent.putExtra("LEVEL", level);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Trạm " + level + " chưa được đăng ký trong Manifest!", Toast.LENGTH_SHORT).show();
-            }
+            startActivity(intent);
         } catch (Exception e) {
-            Log.e("HomeActivity", "Lỗi Intent: " + e.getMessage());
-            Toast.makeText(this, "Không thể mở bài học: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e("HomeActivity", "Intent Error: " + e.getMessage());
+            Toast.makeText(this, "Cannot open lesson: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -149,44 +218,16 @@ public class  HomeActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_dictionary) {
                     startActivity(new Intent(this, DictionaryActivity.class));
-                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_flashcards) {
                     startActivity(new Intent(this, FlashcardsActivity.class));
-                    overridePendingTransition(0, 0);
                     return true;
                 } else if (itemId == R.id.nav_profile) {
                     startActivity(new Intent(this, ProfileActivity.class));
-                    overridePendingTransition(0, 0);
                     return true;
                 }
                 return false;
             });
         }
-    }
-
-    private void updateJourneyUI() {
-        SharedPreferences prefs = getSharedPreferences(JOURNEY_PREFS, MODE_PRIVATE);
-        int currentLevel = prefs.getInt(KEY_CURRENT_LEVEL, 1); // Default to level 1
-
-        // Station 1
-        station1.setEnabled(true);
-        tvStation1Title.setTextColor(Color.parseColor("#FFFFFF"));
-
-        // Station 2
-        station2.setEnabled(true);
-        tvStation2Title.setTextColor(Color.parseColor("#FFFFFF"));
-
-        // Station 3
-        station3.setEnabled(true);
-        tvStation3Title.setTextColor(Color.parseColor("#FFFFFF"));
-
-        // Station 4
-        station4.setEnabled(true);
-        tvStation4Title.setTextColor(Color.parseColor("#FFFFFF"));
-
-        // Station 5
-        station5.setEnabled(true);
-        tvStation5Title.setTextColor(Color.parseColor("#FFFFFF"));
     }
 }
