@@ -1,5 +1,6 @@
 package com.example.instalearnenglish.feature.station1;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +39,9 @@ public class ST1_ForgotSomethingGameFragment extends Fragment {
     private int score = 0;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,15 +51,24 @@ public class ST1_ForgotSomethingGameFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
         memorizeContainer = view.findViewById(R.id.memorize_container);
         choiceContainer = view.findViewById(R.id.choice_container);
         optionsButtonsContainer = view.findViewById(R.id.options_buttons_container);
-        itemsGrid = view.findViewById(R.id.items_grid); // This is now a LinearLayout
+        itemsGrid = view.findViewById(R.id.items_grid);
         tvProgress = view.findViewById(R.id.tv_progress);
         view.findViewById(R.id.btn_back).setOnClickListener(v -> requireActivity().finish());
 
         loadRounds();
         startGame();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
     }
 
     private void loadRounds() {
@@ -123,8 +142,8 @@ public class ST1_ForgotSomethingGameFragment extends Fragment {
     }
 
     private void displayRound() {
-        if (currentRoundIndex >= roundList.size()) {
-            showFinalScore();
+        if (!isAdded() || currentRoundIndex >= roundList.size()) {
+            updateGameProgress();
             return;
         }
         tvProgress.setText("Round: " + (currentRoundIndex + 1) + "/" + roundList.size());
@@ -140,10 +159,11 @@ public class ST1_ForgotSomethingGameFragment extends Fragment {
             itemsGrid.addView(itemView);
         }
 
-        handler.postDelayed(this::showChoiceScreen, 5000); // Changed to 5 seconds
+        handler.postDelayed(this::showChoiceScreen, 5000);
     }
 
     private void showChoiceScreen() {
+        if (!isAdded()) return;
         memorizeContainer.setVisibility(View.GONE);
         choiceContainer.setVisibility(View.VISIBLE);
 
@@ -162,43 +182,87 @@ public class ST1_ForgotSomethingGameFragment extends Fragment {
     }
 
     private void checkAnswer(String selectedAnswer) {
-        GameRound currentRound = roundList.get(currentRoundIndex);
-        if (selectedAnswer.equals(currentRound.getMissingItem().getName())) {
-            score++;
-            Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), "Wrong!", Toast.LENGTH_SHORT).show();
+        if (!isAdded()) return;
+        for (int i = 0; i < optionsButtonsContainer.getChildCount(); i++) {
+            optionsButtonsContainer.getChildAt(i).setEnabled(false);
         }
-        currentRoundIndex++;
-        handler.postDelayed(this::displayRound, 1500);
+
+        GameRound currentRound = roundList.get(currentRoundIndex);
+        boolean isCorrect = selectedAnswer.equals(currentRound.getMissingItem().getName());
+
+        if (isCorrect) {
+            score++;
+            playSoundAndShowToast(true, "Correct!");
+        } else {
+            playSoundAndShowToast(false, "Wrong!");
+        }
+
+        handler.postDelayed(() -> {
+            if (!isAdded()) return;
+            currentRoundIndex++;
+            displayRound();
+        }, 1500);
+    }
+    
+    private void playSoundAndShowToast(boolean isCorrect, String message) {
+        if (!isAdded()) return;
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        int soundResId = isCorrect ? R.raw.right_answer : R.raw.wrong_answer;
+        MediaPlayer mp = MediaPlayer.create(getContext(), soundResId);
+        mp.setOnCompletionListener(MediaPlayer::release);
+        mp.start();
     }
 
-    private void showFinalScore() {
+    private void updateGameProgress() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null || !isAdded()) {
+            showFinalScore(false);
+            return;
+        }
+        DocumentReference userDocRef = db.collection("users").document(user.getUid());
+
+        userDocRef.update("station1_completed_games", FieldValue.arrayUnion("FORGOT_SOMETHING"))
+                .addOnSuccessListener(aVoid -> {
+                    if (!isAdded()) return;
+                    userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                        if (!isAdded()) return;
+                        if (documentSnapshot.exists()) {
+                            List<String> completedGames = (List<String>) documentSnapshot.get("station1_completed_games");
+                            if (completedGames != null && completedGames.size() >= 7) {
+                                if (documentSnapshot.getLong("currentLevel") == 1L) {
+                                    userDocRef.update("currentLevel", 2L).addOnSuccessListener(aVoid1 -> showFinalScore(true));
+                                } else {
+                                    showFinalScore(false);
+                                }
+                            } else {
+                                showFinalScore(false);
+                            }
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> showFinalScore(false));
+    }
+
+    private void showFinalScore(boolean justUnlocked) {
+        if (!isAdded()) return;
+        String message = "Your score: " + score + "/" + roundList.size();
+        if (justUnlocked) {
+            message += "\n\nCongratulations! You have unlocked Station 2!";
+        }
+
         new AlertDialog.Builder(requireContext())
                 .setTitle("Game Over!")
-                .setMessage("Your score: " + score + "/" + roundList.size())
+                .setMessage(message)
                 .setPositiveButton("Play Again", (dialog, which) -> startGame())
                 .setNegativeButton("Exit", (dialog, which) -> requireActivity().finish())
                 .setCancelable(false)
                 .show();
     }
 
-    @Override
-    public void onDestroy() {
-        handler.removeCallbacksAndMessages(null);
-        super.onDestroy();
-    }
-
-    // Inner classes for models
     private static class GameItem {
         private final String name;
         private final int imageResId;
-
-        public GameItem(String name, int imageResId) {
-            this.name = name;
-            this.imageResId = imageResId;
-        }
-
+        public GameItem(String name, int imageResId) { this.name = name; this.imageResId = imageResId; }
         public String getName() { return name; }
         public int getImageResId() { return imageResId; }
     }
@@ -206,12 +270,7 @@ public class ST1_ForgotSomethingGameFragment extends Fragment {
     private static class GameRound {
         private final List<GameItem> shownItems;
         private final GameItem missingItem;
-
-        public GameRound(List<GameItem> shownItems, GameItem missingItem) {
-            this.shownItems = shownItems;
-            this.missingItem = missingItem;
-        }
-
+        public GameRound(List<GameItem> shownItems, GameItem missingItem) { this.shownItems = shownItems; this.missingItem = missingItem; }
         public List<GameItem> getShownItems() { return shownItems; }
         public GameItem getMissingItem() { return missingItem; }
     }

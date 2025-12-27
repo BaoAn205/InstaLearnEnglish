@@ -1,6 +1,7 @@
 package com.example.instalearnenglish.feature.station1;
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -14,10 +15,18 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +49,9 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
     private CountDownTimer countDownTimer;
     private static final long QUESTION_TIME_LIMIT = 20000; // 20 seconds
 
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,7 +71,9 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // ... (find all other views)
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        
         tvProgress = view.findViewById(R.id.tv_progress);
         tvQuestion = view.findViewById(R.id.tv_question);
         btnOption1 = view.findViewById(R.id.btn_option1);
@@ -94,6 +108,7 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
     }
 
     private void displayQuestion() {
+        if (!isAdded()) return;
         if (currentQuestionIndex < questionList.size()) {
             resetButtonColors();
             Question currentQuestion = questionList.get(currentQuestionIndex);
@@ -107,7 +122,7 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
             }
             startTimer();
         } else {
-            showFinalScore();
+            updateGameProgress();
         }
     }
 
@@ -119,20 +134,20 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
         countDownTimer = new CountDownTimer(QUESTION_TIME_LIMIT, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-                progressTimer.setProgress((int) (millisUntilFinished / 100));
+                if(isAdded()) progressTimer.setProgress((int) (millisUntilFinished / 100));
             }
 
             @Override
             public void onFinish() {
-                handleTimeout();
+                if(isAdded()) handleTimeout();
             }
         }.start();
     }
 
     private void handleTimeout() {
+        playSoundAndShowToast(false, "Time's up!");
         for (Button btn : optionButtons) {
             btn.setEnabled(false);
-            // Highlight the correct answer
             if (btn.getText().toString().equals(questionList.get(currentQuestionIndex).getCorrectAnswer())) {
                 btn.setBackgroundColor(Color.GREEN);
             }
@@ -154,9 +169,12 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
             btn.setEnabled(false);
         }
 
-        if (selectedAnswer.equals(currentQuestion.getCorrectAnswer())) {
+        boolean isCorrect = selectedAnswer.equals(currentQuestion.getCorrectAnswer());
+        
+        if (isCorrect) {
             score++;
             clickedButton.setBackgroundColor(Color.GREEN);
+            playSoundAndShowToast(true, "Correct!");
         } else {
             clickedButton.setBackgroundColor(Color.RED);
             for (Button btn : optionButtons) {
@@ -165,21 +183,69 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
                     break;
                 }
             }
+            playSoundAndShowToast(false, "Wrong!");
         }
         moveToNextQuestionWithDelay();
     }
 
     private void moveToNextQuestionWithDelay() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!isAdded()) return;
             currentQuestionIndex++;
             displayQuestion();
-        }, 2000); // Wait 2 seconds before next question
+        }, 1500);
     }
 
-    private void showFinalScore() {
+    private void playSoundAndShowToast(boolean isCorrect, String message) {
+        if (!isAdded()) return;
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        int soundResId = isCorrect ? R.raw.right_answer : R.raw.wrong_answer;
+        MediaPlayer mp = MediaPlayer.create(getContext(), soundResId);
+        mp.setOnCompletionListener(MediaPlayer::release);
+        mp.start();
+    }
+
+    private void updateGameProgress() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null || !isAdded()) {
+            showFinalScore(false);
+            return;
+        }
+        DocumentReference userDocRef = db.collection("users").document(user.getUid());
+
+        userDocRef.update("station1_completed_games", FieldValue.arrayUnion("QUIZ_PROHIBITED_ITEMS"))
+                .addOnSuccessListener(aVoid -> {
+                    if (!isAdded()) return;
+                    userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                        if (!isAdded()) return;
+                        if (documentSnapshot.exists()) {
+                            List<String> completedGames = (List<String>) documentSnapshot.get("station1_completed_games");
+                            if (completedGames != null && completedGames.size() >= 7) {
+                                if (documentSnapshot.getLong("currentLevel") == 1L) {
+                                    userDocRef.update("currentLevel", 2L)
+                                        .addOnSuccessListener(aVoid1 -> showFinalScore(true));
+                                } else {
+                                    showFinalScore(false);
+                                }
+                            } else {
+                                showFinalScore(false);
+                            }
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> showFinalScore(false));
+    }
+
+    private void showFinalScore(boolean justUnlocked) {
+        if (!isAdded()) return;
+        String message = "Your score: " + score + "/" + questionList.size();
+        if (justUnlocked) {
+            message += "\n\nCongratulations! You have unlocked Station 2!";
+        }
+
         new AlertDialog.Builder(requireContext())
                 .setTitle("Quiz Completed!")
-                .setMessage("Your score: " + score + "/" + questionList.size())
+                .setMessage(message)
                 .setPositiveButton("Play Again", (dialog, which) -> startGame())
                 .setNegativeButton("Exit", (dialog, which) -> requireActivity().finish())
                 .setCancelable(false)
@@ -193,12 +259,14 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
     }
 
     private void speakQuestion() {
+        if (!isAdded() || tts == null) return;
         String text = tvQuestion.getText().toString();
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
+        super.onDestroyView();
         if (tts != null) {
             tts.stop();
             tts.shutdown();
@@ -206,7 +274,6 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
-        super.onDestroy();
     }
 
     private void loadQuestions() {
@@ -224,7 +291,6 @@ public class ST1_QuizGameFragment extends Fragment implements View.OnClickListen
         Collections.shuffle(questionList);
     }
 
-    // Inner class for Question model
     private static class Question {
         private String questionText;
         private String correctAnswer;

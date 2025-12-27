@@ -121,10 +121,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(this, DictionaryActivity.class));
                     overridePendingTransition(0, 0);
                     return true;
-                } else if (itemId == R.id.nav_flashcards) {
-                    startActivity(new Intent(this, FlashcardsActivity.class));
-                    overridePendingTransition(0, 0);
-                    return true;
                 } else if (itemId == R.id.nav_profile) {
                     startActivity(new Intent(this, ProfileActivity.class));
                     overridePendingTransition(0, 0);

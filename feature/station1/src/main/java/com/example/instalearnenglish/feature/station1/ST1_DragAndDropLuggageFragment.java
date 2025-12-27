@@ -2,16 +2,19 @@ package com.example.instalearnenglish.feature.station1;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -20,13 +23,17 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ST1_DragAndDropLuggageFragment extends Fragment {
 
     private int correctDrops = 0;
     private int totalItems = 0;
-    private ViewGroup itemsContainer;
+    private List<View> draggableItems = new ArrayList<>();
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -44,138 +51,156 @@ public class ST1_DragAndDropLuggageFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        itemsContainer = view.findViewById(R.id.items_to_drag_container);
-
         view.findViewById(R.id.carry_on_bin_container).setOnDragListener(new DragListener());
         view.findViewById(R.id.checked_luggage_bin_container).setOnDragListener(new DragListener());
 
-        // Setup items
-        setupDraggableItem(view.findViewById(R.id.item_laptop));
-        setupDraggableItem(view.findViewById(R.id.item_passport));
-        setupDraggableItem(view.findViewById(R.id.item_water));
-        setupDraggableItem(view.findViewById(R.id.item_scissors));
-        setupDraggableItem(view.findViewById(R.id.item_tshirt));
-        setupDraggableItem(view.findViewById(R.id.item_jacket));
-        setupDraggableItem(view.findViewById(R.id.item_book));
-        setupDraggableItem(view.findViewById(R.id.item_medication));
+        setupItem(view.findViewById(R.id.item_laptop), "Laptop", R.drawable.laptop, "carry_on");
+        setupItem(view.findViewById(R.id.item_passport), "Passport", R.drawable.passport, "carry_on");
+        setupItem(view.findViewById(R.id.item_water), "Water", R.drawable.waterbottle, "checked");
+        setupItem(view.findViewById(R.id.item_scissors), "Scissors", R.drawable.scissor, "checked");
+        setupItem(view.findViewById(R.id.item_tshirt), "T-Shirt", R.drawable.shirt, "checked");
+        setupItem(view.findViewById(R.id.item_jacket), "Jacket", R.drawable.jacket, "carry_on");
+        setupItem(view.findViewById(R.id.item_book), "Book", R.drawable.book, "carry_on");
+        setupItem(view.findViewById(R.id.item_medication), "Medication", R.drawable.medicine, "carry_on");
 
-        totalItems = itemsContainer.getChildCount();
+        totalItems = draggableItems.size();
 
         view.findViewById(R.id.back_button).setOnClickListener(v -> requireActivity().finish());
     }
 
-    private void setupDraggableItem(View itemView) {
-        itemView.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                String correctBinTag = (String) v.getTag();
-                ClipData.Item item = new ClipData.Item(correctBinTag);
-                ClipData dragData = new ClipData(correctBinTag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(v);
-                v.startDragAndDrop(dragData, myShadow, v, 0);
-                v.setAlpha(0.5f);
-                return true;
-            }
-            return false;
-        });
+    private void setupItem(View itemView, String name, int imageRes, String correctBinTag) {
+        ImageView imageView = itemView.findViewById(R.id.item_animation);
+        TextView nameView = itemView.findViewById(R.id.item_name);
+
+        imageView.setImageResource(imageRes);
+        nameView.setText(name);
+        itemView.setTag(correctBinTag);
+        itemView.setOnTouchListener(new TouchListener());
+        draggableItems.add(itemView);
     }
 
-    private void checkAndAdvanceLevel() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            showWinDialog("You\'ve packed everything correctly!");
+    private void updateGameProgress() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null || !isAdded()) {
+            showWinDialog(false);
             return;
         }
+        DocumentReference userDocRef = db.collection("users").document(user.getUid());
 
-        DocumentReference userDocRef = db.collection("users").document(currentUser.getUid());
-        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot != null && documentSnapshot.exists()) {
-                Long currentLevel = documentSnapshot.getLong("currentLevel");
-                if (currentLevel == null) currentLevel = 1L;
-
-                // Check if the user is on the level of this station (Station 1)
-                if (currentLevel == 1) {
-                    // Advance the user to the next level
-                    userDocRef.update("currentLevel", 2)
-                        .addOnSuccessListener(aVoid -> {
-                            String message = "You\'ve packed everything correctly!\n\nCongratulations, you\'ve unlocked Station 2!";
-                            showWinDialog(message);
-                        })
-                        .addOnFailureListener(e -> showWinDialog("You\'ve packed everything correctly!")); // Still show win dialog on failure
-                } else {
-                    // User has already passed this level
-                    showWinDialog("You\'ve packed everything correctly!");
-                }
-            } else {
-                showWinDialog("You\'ve packed everything correctly!");
-            }
-        }).addOnFailureListener(e -> showWinDialog("You\'ve packed everything correctly!"));
+        userDocRef.update("station1_completed_games", FieldValue.arrayUnion("DRAG_AND_DROP_LUGGAGE"))
+                .addOnSuccessListener(aVoid -> userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                    if (!isAdded()) return;
+                    if (documentSnapshot.exists()) {
+                        List<String> completedGames = (List<String>) documentSnapshot.get("station1_completed_games");
+                        if (completedGames != null && completedGames.size() >= 7) {
+                            if (documentSnapshot.getLong("currentLevel") == 1L) {
+                                userDocRef.update("currentLevel", 2L).addOnSuccessListener(aVoid1 -> showWinDialog(true));
+                            } else {
+                                showWinDialog(false);
+                            }
+                        } else {
+                            showWinDialog(false);
+                        }
+                    }
+                }))
+                .addOnFailureListener(e -> showWinDialog(false));
     }
 
-    private void showWinDialog(String message) {
-        if (!isAdded() || getContext() == null) return; // Ensure fragment is still attached
+    private void showWinDialog(boolean justUnlocked) {
+        if (!isAdded()) return;
+
+        String message = "You've packed everything correctly!";
+        if (justUnlocked) {
+            message += "\n\nCongratulations! You have unlocked Station 2!";
+        }
 
         new AlertDialog.Builder(requireContext())
-            .setTitle("Congratulations!")
-            .setMessage(message)
-            .setPositiveButton("Play Again", (dialog, which) -> resetGame())
-            .setNegativeButton("Exit", (dialog, which) -> requireActivity().finish())
-            .setCancelable(false)
-            .show();
+                .setTitle("Congratulations!")
+                .setMessage(message)
+                .setPositiveButton("Play Again", (dialog, which) -> resetGame())
+                .setNegativeButton("Exit", (dialog, which) -> requireActivity().finish())
+                .setCancelable(false)
+                .show();
     }
 
     private void resetGame() {
         correctDrops = 0;
-        for (int i = 0; i < itemsContainer.getChildCount(); i++) {
-            itemsContainer.getChildAt(i).setVisibility(View.VISIBLE);
-            itemsContainer.getChildAt(i).setAlpha(1.0f);
+        for (View item : draggableItems) {
+            item.setVisibility(View.VISIBLE);
+            item.setAlpha(1.0f);
+        }
+    }
+
+    private void playSoundAndShowToast(boolean isCorrect) {
+        if (!isAdded()) return;
+        int soundResId;
+        String message;
+        if (isCorrect) {
+            soundResId = R.raw.right_answer;
+            message = "Correct!";
+        } else {
+            soundResId = R.raw.wrong_answer;
+            message = "Wrong luggage!";
+        }
+
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        MediaPlayer mp = MediaPlayer.create(getContext(), soundResId);
+        mp.setOnCompletionListener(MediaPlayer::release);
+        mp.start();
+    }
+
+    private static final class TouchListener implements View.OnTouchListener {
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                ClipData.Item item = new ClipData.Item((CharSequence) view.getTag());
+                ClipData dragData = new ClipData((CharSequence) view.getTag(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(view);
+                view.startDragAndDrop(dragData, myShadow, view, 0);
+                view.setAlpha(0.4f);
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     private class DragListener implements View.OnDragListener {
         @Override
         public boolean onDrag(View v, DragEvent event) {
+            if (!isAdded()) return false;
             final View draggedView = (View) event.getLocalState();
-            int action = event.getAction();
 
-            switch (action) {
+            switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     return true;
-
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    v.setBackgroundColor(Color.parseColor("#D1C4E9"));
+                    v.animate().scaleX(1.1f).scaleY(1.1f).setDuration(200).start();
                     return true;
-
                 case DragEvent.ACTION_DRAG_EXITED:
-                    v.setBackgroundColor(Color.TRANSPARENT);
+                    v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start();
                     return true;
-
                 case DragEvent.ACTION_DROP:
-                    v.setBackgroundColor(Color.TRANSPARENT);
-                    String correctBinTag = event.getClipData().getDescription().getLabel().toString();
-                    String targetBinTag = (v.getId() == R.id.carry_on_bin_container) ? "carry_on" : "checked";
+                    v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start();
+                    String droppedOnTag = (String) v.getTag();
+                    String itemTag = (String) draggedView.getTag();
 
-                    if (correctBinTag.equals(targetBinTag)) {
+                    if (itemTag.equals(droppedOnTag)) {
                         correctDrops++;
-                        draggedView.animate().alpha(0.0f).setDuration(300).withEndAction(() -> draggedView.setVisibility(View.GONE));
-                        Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+                        draggedView.setVisibility(View.GONE);
+                        playSoundAndShowToast(true);
                         if (correctDrops == totalItems) {
-                            // Instead of calling showWinDialog directly, call the new method
-                            checkAndAdvanceLevel();
+                           new Handler(Looper.getMainLooper()).postDelayed(() -> updateGameProgress(), 1000);
                         }
                     } else {
-                        final Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
-                        draggedView.startAnimation(shake);
                         draggedView.setAlpha(1.0f);
-                        Toast.makeText(getContext(), "Wrong luggage! Try again.", Toast.LENGTH_SHORT).show();
+                        playSoundAndShowToast(false);
                     }
                     return true;
-
                 case DragEvent.ACTION_DRAG_ENDED:
                     if (!event.getResult()) {
                         draggedView.setAlpha(1.0f);
                     }
                     return true;
-
                 default:
                     return false;
             }

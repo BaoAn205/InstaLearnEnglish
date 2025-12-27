@@ -1,30 +1,36 @@
 package com.example.instalearnenglish.feature.station1;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton; 
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.android.material.R.attr;
-import com.example.instalearnenglish.feature.station1.R;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ST1_LessonSimulationFragment extends Fragment {
 
@@ -35,8 +41,35 @@ public class ST1_LessonSimulationFragment extends Fragment {
     private FirebaseFirestore db;
     private String lessonId;
     private String currentStepId = "step1";
-    private String nextStepIdAfterRecording; // To store the next step
-    private SpeechRecognizer speechRecognizer;
+    private String nextStepIdAfterRecording;
+
+    private TextToSpeech tts;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    private final ActivityResultLauncher<Intent> speechResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (!isAdded()) return;
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    ArrayList<String> results = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    if (results != null && !results.isEmpty()) {
+                        String spokenText = results.get(0);
+                        String correctAnswer = (String) recordButton.getTag();
+                        displayRecognitionResult(spokenText, correctAnswer);
+
+                        handler.postDelayed(() -> {
+                            if (!isAdded()) return;
+                            fadeOutView(recordingContainer, () -> {
+                                if (!isAdded()) return;
+                                recognitionResultText.setVisibility(View.GONE);
+                                loadStep(nextStepIdAfterRecording);
+                            });
+                        }, 2500);
+                    }
+                }
+                recordButton.setText("Tap to Speak");
+                recordButton.setEnabled(true);
+            });
 
     @Nullable
     @Override
@@ -44,6 +77,13 @@ public class ST1_LessonSimulationFragment extends Fragment {
         if (getArguments() != null) {
             lessonId = getArguments().getString("LESSON_ID");
         }
+        tts = new TextToSpeech(getContext(), status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                tts.setLanguage(Locale.US);
+            } else {
+                Log.e("TTS", "Initialization Failed!");
+            }
+        });
         return inflater.inflate(R.layout.st1_fragment_lesson_simulation, container, false);
     }
 
@@ -57,89 +97,86 @@ public class ST1_LessonSimulationFragment extends Fragment {
         recordButton = view.findViewById(R.id.record_button);
         recognitionResultText = view.findViewById(R.id.recognition_result_text);
         db = FirebaseFirestore.getInstance();
-        setupSpeechRecognizer();
+
+        recordButton.setOnClickListener(v -> startSpeechToText());
+
         if (lessonId != null && !currentStepId.isEmpty()) {
             loadStep(currentStepId);
         }
     }
 
-    private void setupSpeechRecognizer() {
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(getContext());
-        final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+    private void handleOptionClick(ST1_SimulationOption selectedOption) {
+        if (!isAdded()) return;
+        fadeOutView(optionsContainer, null);
+        addUserMessage(selectedOption.getText());
 
-        speechRecognizer.setRecognitionListener(new RecognitionListener() {
-            @Override
-            public void onResults(Bundle results) {
-                recordButton.setText("Tap to Speak");
-                recordButton.setEnabled(true);
-                ArrayList<String> data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (data != null && !data.isEmpty()) {
-                    String recognizedText = data.get(0);
-                    String correctAnswer = (String) recordButton.getTag();
-                    displayRecognitionResult(recognizedText, correctAnswer);
+        final View typingIndicator = addTypingIndicator();
 
-                    // After showing the result, wait and then proceed to the next step.
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        fadeOutView(recordingContainer, () -> {
-                            recognitionResultText.setVisibility(View.GONE); // Hide the result text
-                            loadStep(nextStepIdAfterRecording); // Load the next logical step
-                        });
-                    }, 2500); // Wait 2.5s for the user to see the result
-                }
-            }
+        handler.postDelayed(() -> {
+            if (!isAdded()) return;
+            if(typingIndicator != null) chatContainer.removeView(typingIndicator);
+            addBotMessage(selectedOption.getResponse(), true);
+            nextStepIdAfterRecording = selectedOption.getNextStep();
+            recordButton.setTag(selectedOption.getText());
+            fadeInView(recordingContainer);
+        }, 1200);
+    }
+    
+    private View addTypingIndicator() {
+        if (!isAdded()) return null;
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View typingBubble = inflater.inflate(R.layout.st1_chat_bubble_typing, chatContainer, false);
+        chatContainer.addView(typingBubble);
+        scrollToBottom();
+        return typingBubble;
+    }
 
-            @Override
-            public void onReadyForSpeech(Bundle params) { recordButton.setText("Listening..."); recordButton.setEnabled(false); }
-            @Override
-            public void onError(int error) { recordButton.setText("Tap to Speak"); recordButton.setEnabled(true); }
-            @Override
-            public void onBeginningOfSpeech() {}
-            @Override
-            public void onEndOfSpeech() {}
-            @Override
-            public void onPartialResults(Bundle partialResults) {}
-            @Override
-            public void onEvent(int eventType, Bundle params) {}
-            @Override
-            public void onBufferReceived(byte[] buffer) {}
-            @Override
-            public void onRmsChanged(float rmsdB) {}
-        });
-
-        recordButton.setOnClickListener(v -> speechRecognizer.startListening(speechRecognizerIntent));
+    private void startSpeechToText() {
+        if (!isAdded()) return;
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "en-US");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...");
+        try {
+            speechResultLauncher.launch(intent);
+            recordButton.setText("Listening...");
+            recordButton.setEnabled(false);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Speech recognition not available", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadStep(String stepId) {
-        if (stepId == null || stepId.isEmpty() || getContext() == null) {
-            addBotMessage("You\'ve completed the simulation!");
+        if (stepId == null || stepId.isEmpty()) {
+            addBotMessage("You\'ve completed the simulation!", false);
             optionsContainer.setVisibility(View.GONE);
             return;
         }
         db.collection("journey_content").document(lessonId)
-            .collection("simulation").document(stepId)
-            .get()
-            .addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    ST1_SimulationStep step = documentSnapshot.toObject(ST1_SimulationStep.class);
-                    if (step != null) {
-                        displayStep(step);
+                .collection("simulation").document(stepId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!isAdded()) return;
+                    if (documentSnapshot.exists()) {
+                        ST1_SimulationStep step = documentSnapshot.toObject(ST1_SimulationStep.class);
+                        if (step != null) {
+                            displayStep(step);
+                        }
                     }
-                }
-            });
+                });
     }
 
     private void displayStep(ST1_SimulationStep step) {
-        addBotMessage(step.getDialogue());
+        if (!isAdded()) return;
+        addBotMessage(step.getDialogue(), true);
         optionsContainer.removeAllViews();
         if (step.getOptions() != null) {
             for (ST1_SimulationOption option : step.getOptions()) {
-                MaterialButton button = new MaterialButton(requireContext(), null, attr.materialButtonOutlinedStyle);
+                MaterialButton button = new MaterialButton(requireContext());
                 button.setText(option.getText());
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.setMargins(0, 16, 0, 0);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0, 8, 0, 8);
                 button.setLayoutParams(params);
                 button.setOnClickListener(v -> handleOptionClick(option));
                 optionsContainer.addView(button);
@@ -148,31 +185,9 @@ public class ST1_LessonSimulationFragment extends Fragment {
         }
     }
 
-    private void handleOptionClick(ST1_SimulationOption selectedOption) {
-        fadeOutView(optionsContainer, null);
-        addUserMessage(selectedOption.getText());
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            addBotMessage(selectedOption.getResponse());
-
-            if (selectedOption.isCorrect()) {
-                // If correct, SAVE the next step ID and SHOW the recording button.
-                // The flow now STOPS and waits for the user to speak.
-                nextStepIdAfterRecording = selectedOption.getNextStep();
-                recordButton.setTag(selectedOption.getText());
-                fadeInView(recordingContainer);
-            } else {
-                // If wrong, proceed to the next step immediately after a delay.
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    currentStepId = selectedOption.getNextStep();
-                    loadStep(currentStepId);
-                }, 1200);
-            }
-        }, 600);
-    }
-
     private void displayRecognitionResult(String recognized, String correct) {
-        fadeInView(recognitionResultText);
+        if (!isAdded()) return;
+        recognitionResultText.setVisibility(View.VISIBLE);
         SpannableString spannable = new SpannableString(recognized);
         String[] recognizedWords = recognized.toLowerCase().split("\\s+");
         String[] correctWords = correct.toLowerCase().split("\\s+");
@@ -193,18 +208,27 @@ public class ST1_LessonSimulationFragment extends Fragment {
         recognitionResultText.setText(spannable);
     }
 
-    private void addBotMessage(String text) {
-        if (getContext() == null) return;
+    private void addBotMessage(String text, boolean canSpeak) {
+        if (!isAdded()) return;
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View botBubble = inflater.inflate(R.layout.st1_chat_bubble_bot, chatContainer, false);
         TextView messageText = botBubble.findViewById(R.id.chat_bubble_text);
+        ImageButton speakButton = botBubble.findViewById(R.id.btn_speak_bot_message);
         messageText.setText(text);
+
+        if (canSpeak) {
+            speakButton.setVisibility(View.VISIBLE);
+            speakButton.setOnClickListener(v -> tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null));
+        } else {
+            speakButton.setVisibility(View.GONE);
+        }
+
         chatContainer.addView(botBubble);
         scrollToBottom();
     }
 
     private void addUserMessage(String text) {
-        if (getContext() == null) return;
+        if (!isAdded()) return;
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View userBubble = inflater.inflate(R.layout.st1_chat_bubble_user, chatContainer, false);
         TextView messageText = userBubble.findViewById(R.id.chat_bubble_text);
@@ -230,5 +254,15 @@ public class ST1_LessonSimulationFragment extends Fragment {
                 onEnd.run();
             }
         }).start();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        handler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 }

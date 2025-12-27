@@ -30,10 +30,6 @@
             android:name=".tools.DictionaryActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
-        <activity
-            android:name=".tools.FlashcardsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 
     </application>
 

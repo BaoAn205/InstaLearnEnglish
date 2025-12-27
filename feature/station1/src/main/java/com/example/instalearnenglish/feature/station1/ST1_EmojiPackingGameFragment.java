@@ -2,7 +2,10 @@ package com.example.instalearnenglish.feature.station1;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -22,6 +25,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,9 +47,13 @@ public class ST1_EmojiPackingGameFragment extends Fragment {
     private int currentChallengeIndex = 0;
     private int score = 0;
 
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
     private final ActivityResultLauncher<Intent> speechResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
+                if (!isAdded()) return;
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     ArrayList<String> results = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     if (results != null && !results.isEmpty()) {
@@ -59,6 +72,9 @@ public class ST1_EmojiPackingGameFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
         tvProgress = view.findViewById(R.id.tv_progress);
         tvEmojiChallenge = view.findViewById(R.id.tv_emoji_challenge);
         tvRecognizedText = view.findViewById(R.id.tv_recognized_text);
@@ -99,8 +115,9 @@ public class ST1_EmojiPackingGameFragment extends Fragment {
     }
 
     private void displayChallenge() {
+        if (!isAdded()) return;
         if (currentChallengeIndex >= challengeList.size()) {
-            showFinalScore();
+            updateGameProgress();
             return;
         }
 
@@ -114,9 +131,11 @@ public class ST1_EmojiPackingGameFragment extends Fragment {
     }
 
     private void startSpeechToText() {
+        if (!isAdded()) return;
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "en-US");
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say what you pack!");
         try {
             speechResultLauncher.launch(intent);
@@ -126,15 +145,15 @@ public class ST1_EmojiPackingGameFragment extends Fragment {
     }
 
     private void checkAnswer(String spokenText) {
+        if (!isAdded()) return;
         btnMic.setEnabled(false);
-        btnNext.setVisibility(View.VISIBLE);
 
         EmojiChallenge currentChallenge = challengeList.get(currentChallengeIndex);
         String spokenTextLower = spokenText.toLowerCase();
         int keywordsFound = 0;
 
         SpannableString spannable = new SpannableString(spokenText);
-        
+
         for (String keyword : currentChallenge.getKeywords()) {
             if (spokenTextLower.contains(keyword)) {
                 keywordsFound++;
@@ -146,27 +165,74 @@ public class ST1_EmojiPackingGameFragment extends Fragment {
 
         tvRecognizedText.setText(spannable);
 
-        if (keywordsFound == currentChallenge.getKeywords().size()) {
+        boolean isCorrect = keywordsFound == currentChallenge.getKeywords().size();
+
+        if (isCorrect) {
             score++;
-            Toast.makeText(getContext(), "Perfect!", Toast.LENGTH_SHORT).show();
+            playSoundAndShowToast(true, "Perfect!");
         } else {
-            Toast.makeText(getContext(), "You missed some items!", Toast.LENGTH_SHORT).show();
+            playSoundAndShowToast(false, "You missed some items!");
         }
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if(isAdded()) btnNext.setVisibility(View.VISIBLE);
+        }, 1000);
     }
 
-    private void showFinalScore() {
+    private void playSoundAndShowToast(boolean isCorrect, String message) {
+        if (!isAdded()) return;
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        int soundResId = isCorrect ? R.raw.right_answer : R.raw.wrong_answer;
+        MediaPlayer mp = MediaPlayer.create(getContext(), soundResId);
+        mp.setOnCompletionListener(MediaPlayer::release);
+        mp.start();
+    }
+
+    private void updateGameProgress() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null || !isAdded()) {
+            showFinalScore(false);
+            return;
+        }
+        DocumentReference userDocRef = db.collection("users").document(user.getUid());
+
+        userDocRef.update("station1_completed_games", FieldValue.arrayUnion("EMOJI_PACKING"))
+                .addOnSuccessListener(aVoid -> {
+                    if (!isAdded()) return;
+                    userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                         if (!isAdded()) return;
+                        if (documentSnapshot.exists()) {
+                            List<String> completedGames = (List<String>) documentSnapshot.get("station1_completed_games");
+                            if (completedGames != null && completedGames.size() >= 7) {
+                                if (documentSnapshot.getLong("currentLevel") == 1L) {
+                                    userDocRef.update("currentLevel", 2L)
+                                        .addOnSuccessListener(aVoid1 -> showFinalScore(true));
+                                } else {
+                                    showFinalScore(false);
+                                }
+                            } else {
+                                showFinalScore(false);
+                            }
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> showFinalScore(false));
+    }
+
+    private void showFinalScore(boolean justUnlocked) {
+        if (!isAdded()) return;
+        String message = "Your score: " + score + "/" + challengeList.size();
+        if (justUnlocked) {
+            message += "\n\nCongratulations! You have unlocked Station 2!";
+        }
+
         new AlertDialog.Builder(requireContext())
                 .setTitle("Challenge Completed!")
-                .setMessage("Your score: " + score + "/" + challengeList.size())
+                .setMessage(message)
                 .setPositiveButton("Play Again", (dialog, which) -> startGame())
                 .setNegativeButton("Exit", (dialog, which) -> requireActivity().finish())
                 .setCancelable(false)
                 .show();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     private static class EmojiChallenge {

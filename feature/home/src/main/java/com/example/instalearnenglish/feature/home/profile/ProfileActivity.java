@@ -6,15 +6,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.instalearnenglish.feature.home.HomeActivity;
-import com.example.instalearnenglish.feature.home.R;
 import com.example.instalearnenglish.feature.home.auth.LoginActivity;
 import com.example.instalearnenglish.feature.home.databinding.FeatureHomeProfileBinding;
 import com.example.instalearnenglish.feature.home.tools.DictionaryActivity;
-import com.example.instalearnenglish.feature.home.tools.FlashcardsActivity;
+import com.example.instalearnenglish.feature.home.utils.MusicManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.instalearnenglish.feature.home.R;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -38,8 +37,15 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Fetch and display user data every time the activity is shown
+        MusicManager.isNavigationToMusicActivity = false;
+        MusicManager.start(this);
         fetchAndDisplayUserData();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MusicManager.pause();
     }
 
     private void fetchAndDisplayUserData() {
@@ -60,12 +66,10 @@ public class ProfileActivity extends AppCompatActivity {
                     Long currentLevel = documentSnapshot.getLong("currentLevel");
                     binding.tvCurrentStation.setText(currentLevel != null ? String.valueOf(currentLevel) : "1");
 
-                    // Get and display the day streak
                     Long dayStreak = documentSnapshot.getLong("dayStreak");
                     binding.tvDayStreak.setText(dayStreak != null ? String.valueOf(dayStreak) : "1");
 
                 } else {
-                    // Default values if document doesn't exist
                     binding.tvUserName.setText("Traveler");
                     binding.tvCurrentStation.setText("1");
                     binding.tvDayStreak.setText("1");
@@ -99,15 +103,13 @@ public class ProfileActivity extends AppCompatActivity {
         binding.bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
+                MusicManager.isNavigationToMusicActivity = true;
                 startActivity(new Intent(this, HomeActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.nav_dictionary) {
+                MusicManager.isNavigationToMusicActivity = true;
                 startActivity(new Intent(this, DictionaryActivity.class));
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_flashcards) {
-                startActivity(new Intent(this, FlashcardsActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.nav_profile) {

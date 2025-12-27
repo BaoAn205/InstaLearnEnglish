@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,9 +67,11 @@ public class RegisterActivity extends AppCompatActivity {
         userData.put("email", firebaseUser.getEmail());
         userData.put("createdAt", new Date()); 
         // Initialize user progress
-        userData.put("currentLevel", 1L); // Use Long for numbers
+        userData.put("currentLevel", 1L);
         userData.put("dayStreak", 1L);
         userData.put("lastLoginDate", new Date());
+        // Initialize an empty list for completed games in station 1
+        userData.put("station1_completed_games", new ArrayList<String>());
 
         db.collection("users").document(firebaseUser.getUid())
                 .set(userData)

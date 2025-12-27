@@ -28,8 +28,8 @@ import com.example.instalearnenglish.feature.home.profile.ProfileActivity;
 import com.example.instalearnenglish.feature.home.remote.DictionaryApiService;
 import com.example.instalearnenglish.feature.home.remote.RetrofitClient;
 import com.example.instalearnenglish.feature.home.remote.TranslationApiService;
+import com.example.instalearnenglish.feature.home.utils.MusicManager;
 import com.example.instalearnenglish.feature.home.utils.SearchHistoryManager;
-import com.google.android.flexbox.FlexboxLayout;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,14 +55,21 @@ public class DictionaryActivity extends AppCompatActivity {
         setupSearchListener();
         setupBackButton();
         setupPopularWords();
-        // Add this line to make the bottom navigation work
         setupBottomNavigation();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        MusicManager.isNavigationToMusicActivity = false;
+        MusicManager.start(this);
         setupRecentSearches();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MusicManager.pause();
     }
 
     private void setupRecentSearches() {
@@ -112,22 +119,19 @@ public class DictionaryActivity extends AppCompatActivity {
         });
     }
 
-    // Method to handle bottom navigation logic
     private void setupBottomNavigation() {
         binding.bottomNavigation.setSelectedItemId(R.id.nav_dictionary);
         binding.bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
+                MusicManager.isNavigationToMusicActivity = true;
                 startActivity(new Intent(this, HomeActivity.class));
-                finish(); 
-                return true;
-            } else if (itemId == R.id.nav_dictionary) {
-                return true; // Already on this screen
-            } else if (itemId == R.id.nav_flashcards) {
-                startActivity(new Intent(this, FlashcardsActivity.class));
                 finish();
                 return true;
+            } else if (itemId == R.id.nav_dictionary) {
+                return true; 
             } else if (itemId == R.id.nav_profile) {
+                MusicManager.isNavigationToMusicActivity = true;
                 startActivity(new Intent(this, ProfileActivity.class));
                 finish();
                 return true;

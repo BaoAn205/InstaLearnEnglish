@@ -1,6 +1,7 @@
 package com.example.instalearnenglish.feature.home;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,13 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.instalearnenglish.feature.home.auth.LoginActivity;
 import com.example.instalearnenglish.feature.home.profile.ProfileActivity;
 import com.example.instalearnenglish.feature.home.tools.DictionaryActivity;
-import com.example.instalearnenglish.feature.home.tools.FlashcardsActivity;
+import com.example.instalearnenglish.feature.home.utils.MusicManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot; // <-- Import added here
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.Timestamp;
 
 import java.util.Calendar;
@@ -34,6 +35,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private MediaPlayer clickSoundPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +48,31 @@ public class HomeActivity extends AppCompatActivity {
         initializeJourneyViews();
         setupStationListeners();
         setupBottomNavigation();
+
+        clickSoundPlayer = MediaPlayer.create(this, R.raw.click_to_station);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        MusicManager.isNavigationToMusicActivity = false;
+        MusicManager.start(this);
         fetchUserProgressAndSetupUI();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MusicManager.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (clickSoundPlayer != null) {
+            clickSoundPlayer.release();
+            clickSoundPlayer = null;
+        }
     }
 
     private void fetchUserProgressAndSetupUI() {
@@ -115,7 +136,6 @@ public class HomeActivity extends AppCompatActivity {
         userDocRef.update(streakUpdate);
     }
 
-
     private void updateJourneyUI(long currentLevel) {
         updateStation(station1, tvStation1Title, 1, currentLevel);
         updateStation(station2, tvStation2Title, 2, currentLevel);
@@ -150,20 +170,35 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupStationListeners() {
-        station1.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(1);
+        station1.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(1); 
+            }
         });
-        station2.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(2);
+        station2.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(2); 
+            }
         });
-        station3.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(3);
+        station3.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(3); 
+            }
         });
-        station4.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(4);
+        station4.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(4); 
+            }
         });
-        station5.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(5);
+        station5.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(5); 
+            }
         });
     }
 
@@ -206,12 +241,11 @@ public class HomeActivity extends AppCompatActivity {
                 if (itemId == R.id.nav_home) {
                     return true;
                 } else if (itemId == R.id.nav_dictionary) {
+                    MusicManager.isNavigationToMusicActivity = true;
                     startActivity(new Intent(this, DictionaryActivity.class));
                     return true;
-                } else if (itemId == R.id.nav_flashcards) {
-                    startActivity(new Intent(this, FlashcardsActivity.class));
-                    return true;
                 } else if (itemId == R.id.nav_profile) {
+                    MusicManager.isNavigationToMusicActivity = true;
                     startActivity(new Intent(this, ProfileActivity.class));
                     return true;
                 }

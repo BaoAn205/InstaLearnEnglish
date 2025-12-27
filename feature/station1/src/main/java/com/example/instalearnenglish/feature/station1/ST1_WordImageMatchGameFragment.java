@@ -1,6 +1,7 @@
 package com.example.instalearnenglish.feature.station1;
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -8,7 +9,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,6 +18,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +44,9 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
     private CountDownTimer countDownTimer;
     private static final long TIME_LIMIT = 10000; // 10 seconds
 
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,6 +56,9 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
         tvProgress = view.findViewById(R.id.tv_progress);
         tvWordToMatch = view.findViewById(R.id.tv_word_to_match);
         ivOption1 = view.findViewById(R.id.iv_option1);
@@ -93,8 +105,8 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
     }
 
     private void displayRound() {
-        if (currentRoundIndex >= roundList.size()) {
-            showFinalScore();
+        if (!isAdded() || currentRoundIndex >= roundList.size()) {
+            updateGameProgress(); 
             return;
         }
 
@@ -112,6 +124,37 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
         }
         startTimer();
     }
+    
+    private void updateGameProgress() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null || !isAdded()) {
+            showFinalScore(false);
+            return;
+        }
+        DocumentReference userDocRef = db.collection("users").document(user.getUid());
+
+        userDocRef.update("station1_completed_games", FieldValue.arrayUnion("WORD_IMAGE_MATCH"))
+                .addOnSuccessListener(aVoid -> {
+                    if (!isAdded()) return;
+                    userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                        if (!isAdded()) return;
+                        if (documentSnapshot.exists()) {
+                            List<String> completedGames = (List<String>) documentSnapshot.get("station1_completed_games");
+                            if (completedGames != null && completedGames.size() >= 7) {
+                                if (documentSnapshot.getLong("currentLevel") == 1L) {
+                                    userDocRef.update("currentLevel", 2L)
+                                        .addOnSuccessListener(aVoid1 -> showFinalScore(true));
+                                } else {
+                                    showFinalScore(false);
+                                }
+                            } else {
+                                showFinalScore(false);
+                            }
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> showFinalScore(false));
+    }
 
     private void startTimer() {
         if (countDownTimer != null) {
@@ -121,12 +164,12 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
         countDownTimer = new CountDownTimer(TIME_LIMIT, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-                progressTimer.setProgress((int) (millisUntilFinished / 100));
+                if(isAdded()) progressTimer.setProgress((int) (millisUntilFinished / 100));
             }
 
             @Override
             public void onFinish() {
-                handleTimeout();
+                if(isAdded()) handleTimeout();
             }
         }.start();
     }
@@ -135,12 +178,13 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
         for (ImageView iv : optionImageViews) {
             iv.setClickable(false);
         }
-        Toast.makeText(getContext(), "Time\'s up!", Toast.LENGTH_SHORT).show();
+        playSoundAndShowToast(false, "Time's up!");
         moveToNextRound();
     }
 
     @Override
     public void onClick(View v) {
+        if (!isAdded()) return;
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
@@ -152,22 +196,34 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
         MatchRound currentRound = roundList.get(currentRoundIndex);
         int selectedImageResId = (int) v.getTag();
 
-        if (selectedImageResId == currentRound.getCorrectImageResId()) {
+        boolean isCorrect = selectedImageResId == currentRound.getCorrectImageResId();
+
+        if (isCorrect) {
             score++;
             v.setBackgroundColor(Color.GREEN);
-            Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+            playSoundAndShowToast(true, "Correct!");
         } else {
             v.setBackgroundColor(Color.RED);
-            Toast.makeText(getContext(), "Wrong!", Toast.LENGTH_SHORT).show();
+            playSoundAndShowToast(false, "Wrong!");
         }
         moveToNextRound();
     }
 
     private void moveToNextRound() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!isAdded()) return;
             currentRoundIndex++;
             displayRound();
         }, 1500);
+    }
+    
+    private void playSoundAndShowToast(boolean isCorrect, String message) {
+        if (!isAdded()) return;
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        int soundResId = isCorrect ? R.raw.right_answer : R.raw.wrong_answer;
+        MediaPlayer mp = MediaPlayer.create(getContext(), soundResId);
+        mp.setOnCompletionListener(MediaPlayer::release);
+        mp.start();
     }
 
     private void resetImageViews() {
@@ -176,10 +232,16 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
         }
     }
 
-    private void showFinalScore() {
+    private void showFinalScore(boolean justUnlocked) {
+        if (!isAdded()) return;
+        String message = "Your score: " + score + "/" + roundList.size();
+        if (justUnlocked) {
+            message += "\n\nCongratulations! You have unlocked Station 2!";
+        }
+        
         new AlertDialog.Builder(requireContext())
                 .setTitle("Game Over!")
-                .setMessage("Your score: " + score + "/" + roundList.size())
+                .setMessage(message)
                 .setPositiveButton("Play Again", (dialog, which) -> startGame())
                 .setNegativeButton("Exit", (dialog, which) -> requireActivity().finish())
                 .setCancelable(false)
@@ -188,10 +250,10 @@ public class ST1_WordImageMatchGameFragment extends Fragment implements View.OnC
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
-        super.onDestroy();
     }
 
     private static class MatchRound {
