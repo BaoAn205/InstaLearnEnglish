@@ -215,10 +215,10 @@ public class HomeActivity extends AppCompatActivity {
                     className = "com.example.instalearnenglish.feature.station23.Station23Activity";
                     break;
                 case 4:
-                    className = "com.example.instalearnenglish.feature.station45.Station4Activity";
+                    className = "com.example.instalearnenglish.feature.station4.Station4Activity";
                     break;
                 case 5:
-                    className = "com.example.instalearnenglish.feature.station45.Station5Activity";
+                    className = "com.example.instalearnenglish.feature.station5.Station5Activity";
                     break;
                 default:
                     return;

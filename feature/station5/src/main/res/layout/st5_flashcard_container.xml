@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <FrameLayout
+        android:id="@+id/card_flipper_container"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp">
+
+        <include
+            android:id="@+id/flashcard_back"
+            layout="@layout/st5_flashcard_back" />
+
+        <include
+            android:id="@+id/flashcard_front"
+            layout="@layout/st5_flashcard_front" />
+
+    </FrameLayout>
+
+</RelativeLayout>

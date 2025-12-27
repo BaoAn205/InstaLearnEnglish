@@ -1,0 +1,52 @@
+
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "com.example.instalearnenglish.feature.station4"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 29
+        // targetSdk removed
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+dependencies {
+    implementation(project(":core:common"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:data"))
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("com.google.android.material:material:1.13.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+    
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // Add this line for Lottie animations
+    implementation("com.airbnb.android:lottie:5.2.0")
+
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
+}

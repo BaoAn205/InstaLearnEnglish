@@ -48,7 +48,8 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:station1"))
     implementation(project(":feature:station23"))
-    implementation(project(":feature:station45"))
+    implementation(project(":feature:station4"))
+    implementation(project(":feature:station5"))
 
     // Core modules
     implementation(project(":core:data"))
