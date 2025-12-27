@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.instalearnenglish.feature.home.tools.DictionaryDialogFragment;
 import com.example.instalearnenglish.feature.station1.databinding.FeatureStation1MainBinding;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -66,9 +67,8 @@ public class Station1Activity extends AppCompatActivity {
         });
 
         binding.btnDictionary.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            intent.setClassName(this, "com.example.instalearnenglish.feature.home.tools.DictionaryActivity");
-            startActivity(intent);
+            DictionaryDialogFragment dialogFragment = new DictionaryDialogFragment();
+            dialogFragment.show(getSupportFragmentManager(), "DictionaryDialog");
         });
     }
 

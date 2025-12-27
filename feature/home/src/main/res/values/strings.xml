@@ -43,6 +43,7 @@
     <string name="bottom_nav_dictionary">Dictionary</string>
     <string name="bottom_nav_flashcards">Flashcards</string>
     <string name="bottom_nav_profile">Profile</string>
+    <string name="bottom_nav_archive">Archive</string>
 
     <!-- Dictionary Screen -->
     <string name="dictionary_title">Dictionary</string>

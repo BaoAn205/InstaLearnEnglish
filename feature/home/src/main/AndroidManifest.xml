@@ -25,9 +25,9 @@
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 
-        <!-- Bộ công cụ học tập -->
+        <!-- Archive Activity -->
         <activity
-            android:name=".tools.DictionaryActivity"
+            android:name=".ArchiveActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 

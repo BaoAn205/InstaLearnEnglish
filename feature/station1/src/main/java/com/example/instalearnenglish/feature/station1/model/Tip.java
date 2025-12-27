@@ -3,14 +3,13 @@ package com.example.instalearnenglish.feature.station1.model;
 public class Tip {
     private String title;
     private String content;
-    private int imageResId; // Will be set locally
+    private String vietnameseContent;
+    private int imageResId;
 
-    // Required empty constructor for Firestore
-    public Tip() {}
-
-    public Tip(String title, String content, int imageResId) {
+    public Tip(String title, String content, String vietnameseContent, int imageResId) {
         this.title = title;
         this.content = content;
+        this.vietnameseContent = vietnameseContent;
         this.imageResId = imageResId;
     }
 
@@ -22,12 +21,11 @@ public class Tip {
         return content;
     }
 
-    public int getImageResId() {
-        return imageResId;
+    public String getVietnameseContent() {
+        return vietnameseContent;
     }
 
-    // Setter for local image assignment
-    public void setImageResId(int imageResId) {
-        this.imageResId = imageResId;
+    public int getImageResId() {
+        return imageResId;
     }
 }
