@@ -86,16 +86,14 @@ public class HomeActivity extends AppCompatActivity {
         DocumentReference userDocRef = db.collection("users").document(currentUser.getUid());
 
         userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            // MẶC ĐỊNH MỞ KHÓA HẾT CÁC TRẠM ĐỂ TEST (Set level = 5)
+            updateJourneyUI(5L);
+            
             if (documentSnapshot != null && documentSnapshot.exists()) {
                 checkAndUpdateDayStreak(documentSnapshot, userDocRef);
-                Long currentLevel = documentSnapshot.getLong("currentLevel");
-                updateJourneyUI(currentLevel != null ? currentLevel : 1L);
-            } else {
-                updateJourneyUI(1L);
             }
         }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Could not fetch user progress.", Toast.LENGTH_SHORT).show();
-            updateJourneyUI(1L);
+            updateJourneyUI(5L);
         });
     }
 
@@ -209,10 +207,21 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent();
             String className;
             switch (level) {
-                case 1: className = "com.example.instalearnenglish.feature.station1.Station1Activity"; break;
-                case 2: case 3: className = "com.example.instalearnenglish.feature.station23.Station23Activity"; break;
-                case 4: case 5: className = "com.example.instalearnenglish.feature.station45.Station45Activity"; break;
-                default: return;
+                case 1:
+                    className = "com.example.instalearnenglish.feature.station1.Station1Activity";
+                    break;
+                case 2:
+                case 3:
+                    className = "com.example.instalearnenglish.feature.station23.Station23Activity";
+                    break;
+                case 4:
+                    className = "com.example.instalearnenglish.feature.station45.Station4Activity";
+                    break;
+                case 5:
+                    className = "com.example.instalearnenglish.feature.station45.Station5Activity";
+                    break;
+                default:
+                    return;
             }
             intent.setClassName(this, className);
             intent.putExtra("LEVEL", level);

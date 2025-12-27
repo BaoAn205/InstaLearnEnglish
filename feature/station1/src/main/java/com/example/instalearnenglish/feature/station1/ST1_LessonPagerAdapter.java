@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class ST1_LessonPagerAdapter extends FragmentStateAdapter {
-
     private final String lessonId;
 
     public ST1_LessonPagerAdapter(@NonNull FragmentActivity fragmentActivity, String lessonId) {
@@ -18,9 +17,6 @@ public class ST1_LessonPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Bundle args = new Bundle();
-        args.putString("LESSON_ID", lessonId);
-
         Fragment fragment;
         switch (position) {
             case 0:
@@ -36,15 +32,20 @@ public class ST1_LessonPagerAdapter extends FragmentStateAdapter {
                 fragment = new ST1_LessonGameFragment();
                 break;
             default:
-                fragment = new Fragment(); // Placeholder for safety
+                fragment = new Fragment();
                 break;
         }
+
+        // Pass lessonId to fragments
+        Bundle args = new Bundle();
+        args.putString("LESSON_ID", lessonId);
         fragment.setArguments(args);
+        
         return fragment;
     }
 
     @Override
     public int getItemCount() {
-        return 4; // We now have 4 tabs
+        return 4; // Tip, Vocab, Simulation, Game
     }
 }
