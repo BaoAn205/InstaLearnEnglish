@@ -16,7 +16,6 @@ public class FlashcardsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_flashcards);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_flashcards);
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -29,8 +28,6 @@ public class FlashcardsActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_dictionary) {
                     startActivity(new Intent(getApplicationContext(), DictionaryActivity.class));
                     overridePendingTransition(0, 0);
-                    return true;
-                } else if (itemId == R.id.nav_flashcards) {
                     return true;
                 } else if (itemId == R.id.nav_profile) {
                     startActivity(new Intent(getApplicationContext(), ProfileActivity.class));

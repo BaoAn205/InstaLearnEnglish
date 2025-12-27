@@ -112,10 +112,6 @@ public class DictionaryActivity extends AppCompatActivity implements RecentSearc
                 return true;
             } else if (itemId == R.id.nav_dictionary) {
                 return true;
-            } else if (itemId == R.id.nav_flashcards) {
-                startActivity(new Intent(getApplicationContext(), FlashcardsActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
             } else if (itemId == R.id.nav_profile) {
                 startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                 overridePendingTransition(0, 0);

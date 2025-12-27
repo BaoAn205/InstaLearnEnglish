@@ -1,6 +1,9 @@
 package com.example.instalearnenglish.feature.station1;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +19,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +43,9 @@ public class ST1_WhatsInMyBagGameFragment extends Fragment {
     private int score = 0;
     private TextToSpeech tts;
 
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,6 +62,9 @@ public class ST1_WhatsInMyBagGameFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
         tvProgress = view.findViewById(R.id.tv_progress);
         btnPlayAudio = view.findViewById(R.id.btn_play_audio);
         btnBack = view.findViewById(R.id.btn_back);
@@ -62,6 +77,15 @@ public class ST1_WhatsInMyBagGameFragment extends Fragment {
 
         loadItems();
         startGame();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
     }
 
     private void startGame() {
@@ -86,8 +110,9 @@ public class ST1_WhatsInMyBagGameFragment extends Fragment {
     }
 
     private void displayItem() {
+        if (!isAdded()) return;
         if (currentItemIndex >= itemList.size()) {
-            showFinalScore();
+            updateGameProgress();
             return;
         }
         tvProgress.setText("Item: " + (currentItemIndex + 1) + "/" + itemList.size());
@@ -97,53 +122,92 @@ public class ST1_WhatsInMyBagGameFragment extends Fragment {
     }
 
     private void speakDescription() {
-        if (tts != null) {
+        if (tts != null && isAdded()) {
             String description = itemList.get(currentItemIndex).getDescription();
             tts.speak(description, TextToSpeech.QUEUE_FLUSH, null, null);
         }
     }
 
     private void checkAnswer() {
+        if (!isAdded()) return;
         String userAnswer = etGuess.getText().toString().trim().toLowerCase();
         String correctAnswer = itemList.get(currentItemIndex).getAnswer();
 
         btnPlayAudio.setEnabled(false);
         btnGuess.setEnabled(false);
 
-        if (userAnswer.equals(correctAnswer)) {
+        boolean isCorrect = userAnswer.equals(correctAnswer);
+
+        if (isCorrect) {
             score++;
-            Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+            playSoundAndShowToast(true, "Correct!");
         } else {
-            Toast.makeText(getContext(), "Wrong!", Toast.LENGTH_SHORT).show();
+            playSoundAndShowToast(false, "Wrong!");
         }
 
-        // Move to the next question regardless of the answer
-        etGuess.postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!isAdded()) return;
             currentItemIndex++;
             displayItem();
-        }, 1500); // Wait 1.5 seconds
+        }, 1500);
     }
 
-    private void showFinalScore() {
+    private void playSoundAndShowToast(boolean isCorrect, String message) {
+        if (!isAdded()) return;
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        int soundResId = isCorrect ? R.raw.right_answer : R.raw.wrong_answer;
+        MediaPlayer mp = MediaPlayer.create(getContext(), soundResId);
+        mp.setOnCompletionListener(MediaPlayer::release);
+        mp.start();
+    }
+
+    private void updateGameProgress() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null || !isAdded()) {
+            showFinalScore(false);
+            return;
+        }
+        DocumentReference userDocRef = db.collection("users").document(user.getUid());
+
+        userDocRef.update("station1_completed_games", FieldValue.arrayUnion("WHATS_IN_MY_BAG"))
+                .addOnSuccessListener(aVoid -> {
+                    if (!isAdded()) return;
+                    userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                        if (!isAdded()) return;
+                        if (documentSnapshot.exists()) {
+                            List<String> completedGames = (List<String>) documentSnapshot.get("station1_completed_games");
+                            if (completedGames != null && completedGames.size() >= 7) {
+                                if (documentSnapshot.getLong("currentLevel") == 1L) {
+                                    userDocRef.update("currentLevel", 2L)
+                                        .addOnSuccessListener(aVoid1 -> showFinalScore(true));
+                                } else {
+                                    showFinalScore(false);
+                                }
+                            } else {
+                                showFinalScore(false);
+                            }
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> showFinalScore(false));
+    }
+
+    private void showFinalScore(boolean justUnlocked) {
+        if (!isAdded()) return;
+        String message = "Your score: " + score + "/" + itemList.size();
+        if (justUnlocked) {
+            message += "\n\nCongratulations! You have unlocked Station 2!";
+        }
+
         new AlertDialog.Builder(requireContext())
                 .setTitle("Game Over!")
-                .setMessage("Your score: " + score + "/" + itemList.size())
+                .setMessage(message)
                 .setPositiveButton("Play Again", (dialog, which) -> startGame())
                 .setNegativeButton("Exit", (dialog, which) -> requireActivity().finish())
                 .setCancelable(false)
                 .show();
     }
 
-    @Override
-    public void onDestroy() {
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-        }
-        super.onDestroy();
-    }
-
-    // Inner class for MysteryItem model
     private static class MysteryItem {
         private final String description;
         private final String answer;

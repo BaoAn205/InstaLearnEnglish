@@ -13,206 +13,53 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_media_previous"
+        android:src="@android:drawable/ic_menu_revert"
+        app:tint="#673AB7"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#673AB7" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/game_title"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_game_title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="Drag items to the correct luggage!"
         android:textColor="#673AB7"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="@+id/back_button"
         app:layout_constraintBottom_toBottomOf="@+id/back_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintStart_toEndOf="@+id/back_button"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <GridLayout
         android:id="@+id/items_to_drag_container"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:columnCount="4"
-        android:alignmentMode="alignMargins"
-        app:layout_constraintTop_toBottomOf="@+id/game_title"
+        android:rowCount="2"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_game_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Items to Drag -->
-        <LinearLayout
-            android:id="@+id/item_laptop"
-            android:tag="carry_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_margin="8dp">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@android:drawable/ic_dialog_info" 
-                app:tint="#9575CD"
-                android:background="@drawable/circle_white_background" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Laptop"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/item_passport"
-            android:tag="carry_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_margin="8dp">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@android:drawable/ic_input_get"
-                app:tint="#9575CD"
-                android:background="@drawable/circle_white_background" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Passport"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/item_water"
-            android:tag="checked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_margin="8dp">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@android:drawable/ic_dialog_alert"
-                app:tint="#9575CD"
-                android:background="@drawable/circle_white_background" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Water"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/item_scissors"
-            android:tag="checked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_margin="8dp">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@android:drawable/ic_input_delete"
-                app:tint="#9575CD"
-                android:background="@drawable/circle_white_background" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Scissors"/>
-        </LinearLayout>
-
-        <!-- New Items -->
-        <LinearLayout
-            android:id="@+id/item_tshirt"
-            android:tag="checked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_margin="8dp">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@android:drawable/star_on" 
-                app:tint="#9575CD"
-                android:background="@drawable/circle_white_background" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="T-shirt"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/item_jacket"
-            android:tag="checked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_margin="8dp">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@android:drawable/star_off"
-                app:tint="#9575CD"
-                android:background="@drawable/circle_white_background" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Jacket"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/item_book"
-            android:tag="carry_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_margin="8dp">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@android:drawable/ic_dialog_email"
-                app:tint="#9575CD"
-                android:background="@drawable/circle_white_background" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Book"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/item_medication"
-            android:tag="carry_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_margin="8dp">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@android:drawable/ic_input_add"
-                app:tint="#9575CD"
-                android:background="@drawable/circle_white_background" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Medication"/>
-        </LinearLayout>
+        <include layout="@layout/st1_draggable_item" android:id="@+id/item_laptop" />
+        <include layout="@layout/st1_draggable_item" android:id="@+id/item_passport" />
+        <include layout="@layout/st1_draggable_item" android:id="@+id/item_water" />
+        <include layout="@layout/st1_draggable_item" android:id="@+id/item_scissors" />
+        <include layout="@layout/st1_draggable_item" android:id="@+id/item_tshirt" />
+        <include layout="@layout/st1_draggable_item" android:id="@+id/item_jacket" />
+        <include layout="@layout/st1_draggable_item" android:id="@+id/item_book" />
+        <include layout="@layout/st1_draggable_item" android:id="@+id/item_medication" />
 
     </GridLayout>
 
     <LinearLayout
         android:id="@+id/bins_container"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:gravity="bottom"
+        app:layout_constraintTop_toBottomOf="@+id/items_to_drag_container"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -220,47 +67,46 @@
         <LinearLayout
             android:id="@+id/carry_on_bin_container"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:gravity="center"
+            android:tag="carry_on">
 
-            <ImageView
-                android:id="@+id/carry_on_bin"
+            <com.airbnb.lottie.LottieAnimationView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/balo"/>
-            
+                app:lottie_rawRes="@raw/briefcase"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Carry-on"
-                android:textStyle="bold" />
-
+                android:text="Carry-on" />
         </LinearLayout>
-        
+
         <LinearLayout
             android:id="@+id/checked_luggage_bin_container"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:gravity="center"
+            android:tag="checked">
 
-            <ImageView
-                android:id="@+id/checked_luggage_bin"
+            <com.airbnb.lottie.LottieAnimationView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/vali"/>
+                app:lottie_rawRes="@raw/suitcase"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Checked Luggage"
-                android:textStyle="bold"/>
-
+                android:text="Checked Luggage" />
         </LinearLayout>
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

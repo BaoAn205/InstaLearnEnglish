@@ -50,11 +50,6 @@ public class ProfileActivity extends AppCompatActivity {
                 overridePendingTransition(0, 0);
                 finish();
                 return true;
-            } else if (itemId == R.id.nav_flashcards) {
-                startActivity(new Intent(getApplicationContext(), FlashcardsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
             } else if (itemId == R.id.nav_profile) {
                 return true;
             }

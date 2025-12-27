@@ -1,6 +1,7 @@
 package com.example.instalearnenglish.feature.home;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,13 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.instalearnenglish.feature.home.auth.LoginActivity;
 import com.example.instalearnenglish.feature.home.profile.ProfileActivity;
 import com.example.instalearnenglish.feature.home.tools.DictionaryActivity;
-import com.example.instalearnenglish.feature.home.tools.FlashcardsActivity;
+import com.example.instalearnenglish.feature.home.utils.MusicManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot; // <-- Import added here
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.Timestamp;
 
 import java.util.Calendar;
@@ -34,6 +35,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private MediaPlayer clickSoundPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +48,31 @@ public class HomeActivity extends AppCompatActivity {
         initializeJourneyViews();
         setupStationListeners();
         setupBottomNavigation();
+
+        clickSoundPlayer = MediaPlayer.create(this, R.raw.click_to_station);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        MusicManager.isNavigationToMusicActivity = false;
+        MusicManager.start(this);
         fetchUserProgressAndSetupUI();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MusicManager.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (clickSoundPlayer != null) {
+            clickSoundPlayer.release();
+            clickSoundPlayer = null;
+        }
     }
 
     private void fetchUserProgressAndSetupUI() {
@@ -66,15 +87,10 @@ public class HomeActivity extends AppCompatActivity {
 
         userDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot != null && documentSnapshot.exists()) {
-                // Check and update day streak
                 checkAndUpdateDayStreak(documentSnapshot, userDocRef);
-
-                // Update journey UI
                 Long currentLevel = documentSnapshot.getLong("currentLevel");
                 updateJourneyUI(currentLevel != null ? currentLevel : 1L);
-
             } else {
-                // If user document doesn't exist, treat as a new user
                 updateJourneyUI(1L);
             }
         }).addOnFailureListener(e -> {
@@ -88,7 +104,6 @@ public class HomeActivity extends AppCompatActivity {
         Long dayStreak = snapshot.getLong("dayStreak");
 
         if (lastLoginTimestamp == null || dayStreak == null) {
-            // If fields are missing, initialize them
             Map<String, Object> initialStreak = new HashMap<>();
             initialStreak.put("dayStreak", 1L);
             initialStreak.put("lastLoginDate", new Date());
@@ -107,10 +122,7 @@ public class HomeActivity extends AppCompatActivity {
         boolean isSameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                             cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
 
-        if (isSameDay) {
-            // User already logged in today, do nothing.
-            return;
-        }
+        if (isSameDay) return;
 
         cal1.add(Calendar.DAY_OF_YEAR, 1);
         boolean isYesterday = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
@@ -118,16 +130,13 @@ public class HomeActivity extends AppCompatActivity {
 
         Map<String, Object> streakUpdate = new HashMap<>();
         if (isYesterday) {
-            // It's a consecutive day, increment streak
             streakUpdate.put("dayStreak", dayStreak + 1);
         } else {
-            // The streak is broken, reset to 1
             streakUpdate.put("dayStreak", 1L);
         }
         streakUpdate.put("lastLoginDate", today);
         userDocRef.update(streakUpdate);
     }
-
 
     private void updateJourneyUI(long currentLevel) {
         updateStation(station1, tvStation1Title, 1, currentLevel);
@@ -163,20 +172,35 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupStationListeners() {
-        station1.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(1);
+        station1.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(1); 
+            }
         });
-        station2.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(2);
+        station2.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(2); 
+            }
         });
-        station3.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(3);
+        station3.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(3); 
+            }
         });
-        station4.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(4);
+        station4.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(4); 
+            }
         });
-        station5.setOnClickListener(v -> {
-            if (v.isEnabled()) openLesson(5);
+        station5.setOnClickListener(v -> { 
+            if (v.isEnabled()) {
+                if (clickSoundPlayer != null) clickSoundPlayer.start();
+                openLesson(5); 
+            }
         });
     }
 
@@ -185,19 +209,10 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent();
             String className;
             switch (level) {
-                case 1:
-                    className = "com.example.instalearnenglish.feature.station1.Station1Activity";
-                    break;
-                case 2:
-                case 3:
-                    className = "com.example.instalearnenglish.feature.station23.Station23Activity";
-                    break;
-                case 4:
-                case 5:
-                    className = "com.example.instalearnenglish.feature.station45.Station45Activity";
-                    break;
-                default:
-                    return;
+                case 1: className = "com.example.instalearnenglish.feature.station1.Station1Activity"; break;
+                case 2: case 3: className = "com.example.instalearnenglish.feature.station23.Station23Activity"; break;
+                case 4: case 5: className = "com.example.instalearnenglish.feature.station45.Station45Activity"; break;
+                default: return;
             }
             intent.setClassName(this, className);
             intent.putExtra("LEVEL", level);
@@ -217,12 +232,11 @@ public class HomeActivity extends AppCompatActivity {
                 if (itemId == R.id.nav_home) {
                     return true;
                 } else if (itemId == R.id.nav_dictionary) {
+                    MusicManager.isNavigationToMusicActivity = true;
                     startActivity(new Intent(this, DictionaryActivity.class));
                     return true;
-                } else if (itemId == R.id.nav_flashcards) {
-                    startActivity(new Intent(this, FlashcardsActivity.class));
-                    return true;
                 } else if (itemId == R.id.nav_profile) {
+                    MusicManager.isNavigationToMusicActivity = true;
                     startActivity(new Intent(this, ProfileActivity.class));
                     return true;
                 }
