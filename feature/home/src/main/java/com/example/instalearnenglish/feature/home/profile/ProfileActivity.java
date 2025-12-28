@@ -7,10 +7,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.instalearnenglish.feature.home.ArchiveActivity;
 import com.example.instalearnenglish.feature.home.HomeActivity;
 import com.example.instalearnenglish.feature.home.auth.LoginActivity;
 import com.example.instalearnenglish.feature.home.databinding.FeatureHomeProfileBinding;
-import com.example.instalearnenglish.feature.home.tools.DictionaryActivity;
+import com.example.instalearnenglish.feature.home.tools.DictionaryDialogFragment;
 import com.example.instalearnenglish.feature.home.utils.MusicManager;
 import com.example.instalearnenglish.feature.home.adapter.SavedItemAdapter;
 import com.example.instalearnenglish.feature.home.model.SavedItem;
@@ -135,8 +136,11 @@ public class ProfileActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.nav_dictionary) {
                 MusicManager.isNavigationToMusicActivity = true;
-                startActivity(new Intent(this, DictionaryActivity.class));
-                finish();
+                DictionaryDialogFragment dialogFragment = new DictionaryDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "DictionaryDialog");
+                return true;
+            } else if (itemId == R.id.nav_archive) {
+                startActivity(new Intent(this, ArchiveActivity.class));
                 return true;
             } else if (itemId == R.id.nav_profile) {
                 return true;

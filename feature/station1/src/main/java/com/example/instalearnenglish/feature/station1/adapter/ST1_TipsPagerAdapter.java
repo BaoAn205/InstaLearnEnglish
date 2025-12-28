@@ -4,25 +4,27 @@ import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instalearnenglish.feature.station1.R;
 import com.example.instalearnenglish.feature.station1.model.Tip;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public class ST1_TipsPagerAdapter extends RecyclerView.Adapter<ST1_TipsPagerAdapter.ViewHolder> {
 
     private final List<Tip> tips;
     private final TextToSpeech tts;
-    private final Set<Integer> expandedPositions = new HashSet<>();
 
     public ST1_TipsPagerAdapter(List<Tip> tips, TextToSpeech tts) {
         this.tips = tips;
@@ -32,13 +34,13 @@ public class ST1_TipsPagerAdapter extends RecyclerView.Adapter<ST1_TipsPagerAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.st1_tip_pager_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.st1_tip_card_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(tips.get(position), tts, position);
+        holder.bind(tips.get(position), tts);
     }
 
     @Override
@@ -46,37 +48,34 @@ public class ST1_TipsPagerAdapter extends RecyclerView.Adapter<ST1_TipsPagerAdap
         return tips.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView ivTipIcon;
         private final TextView tvTipTitle;
         private final TextView tvTipContent;
-        private final TextView tvTipVietnamese;
+        private final TextView tvTipVietnameseContent;
         private final ImageButton btnSpeak;
-        private final Button btnShowTranslation;
+        private final ImageButton btnArchive;
 
         ViewHolder(View view) {
             super(view);
             ivTipIcon = view.findViewById(R.id.iv_tip_icon);
             tvTipTitle = view.findViewById(R.id.tv_tip_title);
             tvTipContent = view.findViewById(R.id.tv_tip_content);
-            tvTipVietnamese = view.findViewById(R.id.tv_tip_vietnamese);
+            tvTipVietnameseContent = view.findViewById(R.id.tv_tip_vietnamese_content);
             btnSpeak = view.findViewById(R.id.btn_speak_tip);
-            btnShowTranslation = view.findViewById(R.id.btn_show_translation);
+            btnArchive = view.findViewById(R.id.btn_archive_tip);
         }
 
-        void bind(final Tip tip, final TextToSpeech tts, int position) {
+        void bind(final Tip tip, final TextToSpeech tts) {
             tvTipTitle.setText(tip.getTitle());
             tvTipContent.setText(tip.getContent());
-            tvTipVietnamese.setText(tip.getVietnameseMeaning());
+            tvTipVietnameseContent.setText(tip.getVietnameseContent());
             ivTipIcon.setImageResource(tip.getImageResId());
 
-            if (expandedPositions.contains(position)) {
-                tvTipVietnamese.setVisibility(View.VISIBLE);
-                btnShowTranslation.setText("Ẩn bản dịch");
-            } else {
-                tvTipVietnamese.setVisibility(View.GONE);
-                btnShowTranslation.setText("Xem bản dịch");
-            }
+            itemView.setOnClickListener(v -> {
+                boolean isVietnameseVisible = tvTipVietnameseContent.getVisibility() == View.VISIBLE;
+                tvTipVietnameseContent.setVisibility(isVietnameseVisible ? View.GONE : View.VISIBLE);
+            });
 
             btnSpeak.setOnClickListener(v -> {
                 if (tts != null) {
@@ -85,16 +84,23 @@ public class ST1_TipsPagerAdapter extends RecyclerView.Adapter<ST1_TipsPagerAdap
                 }
             });
 
-            btnShowTranslation.setOnClickListener(v -> {
-                if (tvTipVietnamese.getVisibility() == View.GONE) {
-                    tvTipVietnamese.setVisibility(View.VISIBLE);
-                    btnShowTranslation.setText("Ẩn bản dịch");
-                    expandedPositions.add(position);
-                } else {
-                    tvTipVietnamese.setVisibility(View.GONE);
-                    btnShowTranslation.setText("Xem bản dịch");
-                    expandedPositions.remove(position);
+            btnArchive.setOnClickListener(v -> {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null) {
+                    Toast.makeText(itemView.getContext(), "You must be logged in to archive tips.", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Map<String, Object> tipData = new HashMap<>();
+                tipData.put("title", tip.getTitle());
+                tipData.put("content", tip.getContent());
+
+                db.collection("users").document(user.getUid()).collection("archived_tips")
+                        .document(tip.getTitle())
+                        .set(tipData)
+                        .addOnSuccessListener(aVoid -> Toast.makeText(itemView.getContext(), "Saved to Archive!", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(itemView.getContext(), "Failed to save.", Toast.LENGTH_SHORT).show());
             });
         }
     }

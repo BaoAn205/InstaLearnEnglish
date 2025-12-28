@@ -9,14 +9,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 
+import com.example.instalearnenglish.feature.home.tools.DictionaryDialogFragment;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class ST1_VocabDetailActivity extends AppCompatActivity {
 
@@ -30,6 +37,8 @@ public class ST1_VocabDetailActivity extends AppCompatActivity {
     private TextToSpeech tts;
     private EditText etMyNotes;
     private String vocabName;
+    private String phonetic;
+    private String vietnamese;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,11 +58,13 @@ public class ST1_VocabDetailActivity extends AppCompatActivity {
         TextView tvDetailVietnamese = findViewById(R.id.tv_detail_vietnamese);
         TextView tvDetailExample = findViewById(R.id.tv_detail_example);
         ImageButton btnSpeak = findViewById(R.id.btn_detail_speak);
+        ImageButton btnDictionary = findViewById(R.id.btn_dictionary);
+        ImageButton btnArchive = findViewById(R.id.btn_archive);
         etMyNotes = findViewById(R.id.et_my_notes);
 
         vocabName = getIntent().getStringExtra(EXTRA_NAME);
-        String phonetic = getIntent().getStringExtra(EXTRA_PHONETIC);
-        String vietnamese = getIntent().getStringExtra(EXTRA_VIETNAMESE);
+        phonetic = getIntent().getStringExtra(EXTRA_PHONETIC);
+        vietnamese = getIntent().getStringExtra(EXTRA_VIETNAMESE);
         String example = getIntent().getStringExtra(EXTRA_EXAMPLE);
         int imageResId = getIntent().getIntExtra(EXTRA_IMAGE_RES_ID, 0);
         String transitionName = getIntent().getStringExtra("EXTRA_TRANSITION_NAME");
@@ -86,6 +97,33 @@ public class ST1_VocabDetailActivity extends AppCompatActivity {
                 tts.speak(vocabName, TextToSpeech.QUEUE_FLUSH, null, null);
             }
         });
+
+        btnDictionary.setOnClickListener(v -> {
+            DictionaryDialogFragment dialogFragment = new DictionaryDialogFragment();
+            dialogFragment.show(getSupportFragmentManager(), "DictionaryDialog");
+        });
+
+        btnArchive.setOnClickListener(v -> archiveVocab());
+    }
+
+    private void archiveVocab() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "You must be logged in to archive words.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> vocabData = new HashMap<>();
+        vocabData.put("name", vocabName);
+        vocabData.put("phonetic", phonetic);
+        vocabData.put("vietnamese", vietnamese);
+
+        db.collection("users").document(user.getUid()).collection("archived_vocabs")
+                .document(vocabName)
+                .set(vocabData)
+                .addOnSuccessListener(aVoid -> Toast.makeText(ST1_VocabDetailActivity.this, "Saved to Archive!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(ST1_VocabDetailActivity.this, "Failed to save.", Toast.LENGTH_SHORT).show());
     }
 
     private void loadNote() {

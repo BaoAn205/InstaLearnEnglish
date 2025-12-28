@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.instalearnenglish.feature.home">
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
     <application>
         <!-- Màn hình chính -->
         <activity
@@ -27,22 +25,11 @@
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 
-        <!-- Archive List Screen -->
+        <!-- Archive Activity -->
         <activity
-            android:name=".profile.ArchiveListActivity"
+            android:name=".ArchiveActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
-
-        <!-- Bộ công cụ học tập -->
-        <activity
-            android:name=".tools.DictionaryActivity"
-            android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
-
-        <service
-            android:name=".tools.FloatingDictionaryService"
-            android:enabled="true"
-            android:exported="false" />
 
     </application>
 

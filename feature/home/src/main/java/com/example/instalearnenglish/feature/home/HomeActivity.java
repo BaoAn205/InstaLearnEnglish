@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.instalearnenglish.feature.home.auth.LoginActivity;
 import com.example.instalearnenglish.feature.home.profile.ProfileActivity;
-import com.example.instalearnenglish.feature.home.tools.DictionaryActivity;
+import com.example.instalearnenglish.feature.home.tools.DictionaryDialogFragment;
 import com.example.instalearnenglish.feature.home.utils.MusicManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -269,7 +269,11 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_dictionary) {
                     MusicManager.isNavigationToMusicActivity = true;
-                    startActivity(new Intent(this, DictionaryActivity.class));
+                    DictionaryDialogFragment dialogFragment = new DictionaryDialogFragment();
+                    dialogFragment.show(getSupportFragmentManager(), "DictionaryDialog");
+                    return true;
+                } else if (itemId == R.id.nav_archive) {
+                    startActivity(new Intent(this, ArchiveActivity.class));
                     return true;
                 } else if (itemId == R.id.nav_profile) {
                     MusicManager.isNavigationToMusicActivity = true;
