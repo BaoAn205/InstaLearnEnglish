@@ -23,14 +23,14 @@ public class Station23PagerAdapter extends LessonPagerAdapter {
                 if (stationId == 3) {
                     return new St3TravelTipFragment();
                 } else {
-                    // Use the new, upgraded fragment for Station 2
                     return new St2TravelTipFragment();
                 }
             case 1: // Vocabulary Tab
+                // Use the new, categorized vocabulary fragments
                 if (stationId == 3) {
-                    return new St3VocabularyFragment();
+                    return new St3VocabularyFragment(); 
                 } else {
-                    return new St23VocabularyFragment();
+                    return new St2VocabularyFragment();
                 }
             case 2: // Simulator Tab
                 if (stationId == 3) {

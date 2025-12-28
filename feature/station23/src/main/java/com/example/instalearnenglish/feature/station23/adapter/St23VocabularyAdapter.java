@@ -42,13 +42,13 @@ public class St23VocabularyAdapter extends RecyclerView.Adapter<St23VocabularyAd
     @Override
     public void onBindViewHolder(@NonNull VocabViewHolder holder, int position) {
         St23VocabItem currentItem = vocabList.get(position);
-        holder.tvEnglish.setText(currentItem.getEnglishWord());
+        holder.tvEnglish.setText(currentItem.getName());
         holder.tvVietnamese.setText(currentItem.getVietnameseMeaning());
 
         // Use the ImageButton for the speak action
         holder.ibSpeak.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onSpeakClicked(currentItem.getEnglishWord());
+                listener.onSpeakClicked(currentItem.getName());
             }
         });
 

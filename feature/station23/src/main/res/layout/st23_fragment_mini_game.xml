@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
     android:padding="16dp">
 
     <!-- 1. Game Menu -->
@@ -18,72 +17,44 @@
             android:id="@+id/st2_header_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mini Games"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+            android:text="Mini Games Challenge"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/st2_header_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chọn trò chơi để bắt đầu"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/st2_header_title" />
-
-        <Button
-            android:id="@+id/st2_btn_security_challenge"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/st2_rv_game_menu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Thử thách An ninh"
-            app:layout_constraintTop_toBottomOf="@id/st2_header_subtitle" />
-
-        <Button
-            android:id="@+id/st2_btn_announcement_game"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="16dp"
-            android:text="Lắng nghe Thông báo"
-            app:layout_constraintTop_toBottomOf="@id/st2_btn_security_challenge" />
-
-        <Button
-            android:id="@+id/st2_btn_boarding_rush_game"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Đến kịp giờ bay"
-            app:layout_constraintTop_toBottomOf="@id/st2_btn_announcement_game" />
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            app:layout_constraintTop_toBottomOf="@id/st2_header_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:listitem="@layout/st3_item_game_card" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 2. Security Challenge Game Container -->
+    <!-- 2. Scanner Game Container -->
     <FrameLayout
         android:id="@+id/st23_security_game_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
-        <!-- UI inflated from st2_game_security_layout.xml -->
-    </FrameLayout>
+        android:visibility="gone"/>
 
     <!-- 3. Announcement Game Container -->
     <FrameLayout
         android:id="@+id/st2_announcement_game_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
-        <!-- UI inflated from st2_game_announcement_layout.xml -->
-    </FrameLayout>
+        android:visibility="gone"/>
 
     <!-- 4. Boarding Rush Game Container -->
     <FrameLayout
         android:id="@+id/st2_boarding_rush_game_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
-        <!-- UI inflated from st2_fragment_game_boarding_rush.xml -->
-    </FrameLayout>
+        android:visibility="gone"/>
 
 </FrameLayout>

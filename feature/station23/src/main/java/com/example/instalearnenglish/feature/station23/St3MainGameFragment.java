@@ -8,7 +8,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,11 +15,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.instalearnenglish.feature.station23.adapter.St3GameMenuAdapter;
 import com.example.instalearnenglish.feature.station23.adapter.St3MatchAdapter;
+import com.example.instalearnenglish.feature.station23.model.GameMenuItem;
 import com.example.instalearnenglish.feature.station23.model.MatchGameDataProvider;
 import com.example.instalearnenglish.feature.station23.model.QuizDataProvider;
 import com.example.instalearnenglish.feature.station23.model.QuizQuestion;
@@ -34,13 +36,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// Removed St3GameMenuAdapter.OnGameClickListener
-public class St3MainGameFragment extends Fragment {
+public class St3MainGameFragment extends Fragment implements St3GameMenuAdapter.OnGameClickListener {
 
     private View menuContainer, quizGameContainer, matchGameContainer, scrambleGameContainer;
 
-    // --- Menu (Reverted to Buttons) ---
-    private Button btnShowQuizGame, btnShowMatchGame, btnShowScrambleGame;
+    // --- Menu ---
+    private RecyclerView rvGameMenu;
 
     // --- Quiz Game ---
     private TextView tvQuizQuestion;
@@ -84,23 +85,33 @@ public class St3MainGameFragment extends Fragment {
         matchGameContainer = view.findViewById(R.id.st3_match_game_layout);
         scrambleGameContainer = view.findViewById(R.id.st3_scramble_game_container);
 
-        // Reverted to original Button setup
-        setupOriginalMenu();
+        setupNewGameMenu();
         showMenu();
     }
-    
-    private void setupOriginalMenu() {
-        // This assumes the buttons are inside the menuContainer
-        btnShowQuizGame = menuContainer.findViewById(R.id.st3_btn_quiz_game);
-        btnShowMatchGame = menuContainer.findViewById(R.id.st3_btn_match_game);
-        btnShowScrambleGame = menuContainer.findViewById(R.id.st3_btn_scramble_game);
 
-        btnShowQuizGame.setOnClickListener(v -> showQuizGame());
-        btnShowMatchGame.setOnClickListener(v -> showMatchGame());
-        btnShowScrambleGame.setOnClickListener(v -> showScrambleGame());
+    private void setupNewGameMenu() {
+        rvGameMenu = menuContainer.findViewById(R.id.st3_rv_game_menu);
+        rvGameMenu.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        List<GameMenuItem> gameList = new ArrayList<>();
+        gameList.add(new GameMenuItem("Trắc nghiệm nhanh", R.raw.animation_quiz, null));
+        gameList.add(new GameMenuItem("Nối từ siêu tốc", R.raw.animation_word_match, null));
+        gameList.add(new GameMenuItem("Sắp xếp câu", R.raw.animation_sentence_scramble, null));
+
+        St3GameMenuAdapter menuAdapter = new St3GameMenuAdapter(getContext(), gameList, this);
+        rvGameMenu.setAdapter(menuAdapter);
     }
 
-    // Removed onGameClick, setupMenu, loadGameMenuItems
+    @Override
+    public void onGameClick(GameMenuItem game) {
+        if (game.getTitle().contains("Trắc nghiệm")) {
+            showQuizGame();
+        } else if (game.getTitle().contains("Nối từ")) {
+            showMatchGame();
+        } else if (game.getTitle().contains("Sắp xếp")) {
+            showScrambleGame();
+        }
+    }
 
     private void showMenu() {
         menuContainer.setVisibility(View.VISIBLE);
@@ -234,7 +245,7 @@ public class St3MainGameFragment extends Fragment {
         englishWords.clear();
         vietnameseWords.clear();
         for (St23VocabItem item : originalVocabList) {
-            englishWords.add(item.getEnglishWord());
+            englishWords.add(item.getName()); // Corrected
             vietnameseWords.add(item.getVietnameseMeaning());
         }
         Collections.shuffle(vietnameseWords);
@@ -247,7 +258,7 @@ public class St3MainGameFragment extends Fragment {
         if (selectedEnglishWord == null || selectedVietnameseWord == null) return;
         boolean isMatch = false;
         for (St23VocabItem item : originalVocabList) {
-            if (item.getEnglishWord().equals(selectedEnglishWord) && item.getVietnameseMeaning().equals(selectedVietnameseWord)) {
+            if (item.getName().equals(selectedEnglishWord) && item.getVietnameseMeaning().equals(selectedVietnameseWord)) { // Corrected
                 isMatch = true;
                 break;
             }
