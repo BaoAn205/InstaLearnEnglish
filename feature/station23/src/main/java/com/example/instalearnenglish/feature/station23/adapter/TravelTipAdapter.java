@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.instalearnenglish.feature.home.utils.ArchiveManager;
 import com.example.instalearnenglish.feature.station23.R;
 import com.example.instalearnenglish.feature.station23.model.TravelTip;
 
@@ -80,11 +79,6 @@ public class TravelTipAdapter extends RecyclerView.Adapter<TravelTipAdapter.TipV
             }
             notifyItemChanged(position);
         });
-
-        holder.btnSave.setOnClickListener(v -> {
-            String id = "ST" + stationId + "_TIP_" + position;
-            ArchiveManager.saveItem(context, id, tip.getTitle(), "TIP", stationId, position);
-        });
     }
 
     @Override
@@ -100,7 +94,6 @@ public class TravelTipAdapter extends RecyclerView.Adapter<TravelTipAdapter.TipV
         ImageView playButton;
         Button btnShowTranslation;
         View divider;
-        ImageView btnSave;
 
         public TipViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -111,7 +104,6 @@ public class TravelTipAdapter extends RecyclerView.Adapter<TravelTipAdapter.TipV
             playButton = itemView.findViewById(R.id.st2_tip_card_play_button);
             btnShowTranslation = itemView.findViewById(R.id.btn_show_translation);
             divider = itemView.findViewById(R.id.divider);
-            btnSave = itemView.findViewById(R.id.st2_tip_card_save_button);
         }
     }
 }

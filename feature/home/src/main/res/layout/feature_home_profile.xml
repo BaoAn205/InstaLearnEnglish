@@ -212,7 +212,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Saved Content Section -->
+            <!-- Saved Content Section (Hidden) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -221,7 +221,8 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="24dp"
+                android:visibility="gone"/>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -230,7 +231,8 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="12dp"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
+                app:cardElevation="2dp"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"

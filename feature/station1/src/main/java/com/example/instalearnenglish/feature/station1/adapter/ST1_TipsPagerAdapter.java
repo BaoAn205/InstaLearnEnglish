@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.instalearnenglish.core.data.utils.ArchiveManager;
 import com.example.instalearnenglish.feature.station1.R;
 import com.example.instalearnenglish.feature.station1.model.Tip;
 
@@ -54,7 +53,6 @@ public class ST1_TipsPagerAdapter extends RecyclerView.Adapter<ST1_TipsPagerAdap
         private final TextView tvTipVietnamese;
         private final ImageButton btnSpeak;
         private final Button btnShowTranslation;
-        private final ImageButton btnSave;
 
         ViewHolder(View view) {
             super(view);
@@ -64,7 +62,6 @@ public class ST1_TipsPagerAdapter extends RecyclerView.Adapter<ST1_TipsPagerAdap
             tvTipVietnamese = view.findViewById(R.id.tv_tip_vietnamese);
             btnSpeak = view.findViewById(R.id.btn_speak_tip);
             btnShowTranslation = view.findViewById(R.id.btn_show_translation);
-            btnSave = view.findViewById(R.id.btn_save_tip);
         }
 
         void bind(final Tip tip, final TextToSpeech tts, int position) {
@@ -98,11 +95,6 @@ public class ST1_TipsPagerAdapter extends RecyclerView.Adapter<ST1_TipsPagerAdap
                     btnShowTranslation.setText("Xem bản dịch");
                     expandedPositions.remove(position);
                 }
-            });
-
-            btnSave.setOnClickListener(v -> {
-                String id = "ST1_TIP_" + position;
-                ArchiveManager.saveItem(v.getContext(), id, tip.getTitle(), "TIP", 1, position);
             });
         }
     }
