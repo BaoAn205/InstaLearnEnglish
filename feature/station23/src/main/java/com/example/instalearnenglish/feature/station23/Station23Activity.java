@@ -26,12 +26,14 @@ public class Station23Activity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
 
-        // Get stationId from Intent (default to 2 if not provided)
-        int stationId = getIntent().getIntExtra("STATION_ID", 2);
+        // Get stationId from Intent using the correct key "LEVEL" (consistent with HomeActivity)
+        int stationId = getIntent().getIntExtra("LEVEL", 2);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(stationId == 2 ? "Trạm 2: Sân bay" : "Trạm 3: Di chuyển");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(stationId == 2 ? "Trạm 2: Sân bay" : "Trạm 3: Di chuyển");
+        }
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         // Pass stationId to the PagerAdapter
