@@ -34,6 +34,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.core:core-ktx:1.13.1")
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
@@ -41,4 +42,10 @@ dependencies {
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
+
+    // Added Lottie library
+    implementation("com.airbnb.android:lottie:6.7.1")
+    
+    // THE FIX: Added Flexbox library
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 }

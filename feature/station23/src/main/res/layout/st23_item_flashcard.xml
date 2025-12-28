@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <FrameLayout
+        android:id="@+id/st23_card_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Back of the Card -->
+        <LinearLayout
+            android:id="@+id/st23_card_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:alpha="0"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:id="@+id/st23_tv_vietnamese"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="#000000"
+                tools:text="Thẻ Lên Máy Bay" />
+        </LinearLayout>
+
+        <!-- Front of the Card -->
+        <LinearLayout
+            android:id="@+id/st23_card_front"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#F5F5F5">
+
+            <TextView
+                android:id="@+id/st23_tv_english"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:textColor="#000000"
+                tools:text="Boarding Pass" />
+
+            <ImageButton
+                android:id="@+id/st23_ib_speak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_btn_speak_now" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.cardview.widget.CardView>
