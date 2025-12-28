@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- 1. Game Menu -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/st3_game_menu_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/st3_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mini Games"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/st3_header_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn trò chơi để bắt đầu"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/st3_header_title" />
+
+        <Button
+            android:id="@+id/st3_btn_quiz_game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Trắc nghiệm nhanh"
+            app:layout_constraintTop_toBottomOf="@id/st3_header_subtitle" />
+
+        <Button
+            android:id="@+id/st3_btn_match_game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Nối từ vựng"
+            app:layout_constraintTop_toBottomOf="@id/st3_btn_quiz_game" />
+
+        <Button
+            android:id="@+id/st3_btn_scramble_game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Sắp xếp câu siêu tốc"
+            app:layout_constraintTop_toBottomOf="@id/st3_btn_match_game" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 2. Quiz Game Container -->
+    <FrameLayout
+        android:id="@+id/st3_quiz_game_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        <!-- The existing Quiz Game UI will be inflated here by the Fragment -->
+    </FrameLayout>
+
+    <!-- 3. Match Game Container -->
+    <FrameLayout
+        android:id="@+id/st3_match_game_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        <!-- The existing Match Game UI will be inflated here by the Fragment -->
+    </FrameLayout>
+
+    <!-- 4. Scramble Game Container -->
+    <FrameLayout
+        android:id="@+id/st3_scramble_game_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        <!-- The new Scramble Game UI will go here -->
+    </FrameLayout>
+
+</FrameLayout>

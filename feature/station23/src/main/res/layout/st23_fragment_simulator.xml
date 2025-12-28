@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <!-- Container for the entire conversation UI (Initially Gone) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/st23_conversation_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/st23_rv_chat_history"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/st23_ll_user_controls"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/st23_item_chat_bot" />
+
+        <LinearLayout
+            android:id="@+id/st23_ll_user_controls"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout
+                android:id="@+id/st23_ll_choice_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/st23_btn_choice_a"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/st23_btn_choice_b"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/st23_fl_mic_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/st23_lottie_mic_animation"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:lottie_rawRes="@raw/mic_animation" />
+                
+                <TextView
+                    android:id="@+id/st23_tv_partial_results"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:visibility="gone"
+                    tools:text="Listening..." />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/st23_lottie_feedback_checkmark"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/checkmark" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/st23_lottie_feedback_failed"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/failed" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Mode Selection UI (Visible by default) -->
+    <LinearLayout
+        android:id="@+id/st23_mode_selection_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn một chế độ để luyện tập"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/st23_btn_reading_mode"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Luyện Đọc" />
+
+        <Button
+            android:id="@+id/st23_btn_speaking_mode"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Luyện Nói" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

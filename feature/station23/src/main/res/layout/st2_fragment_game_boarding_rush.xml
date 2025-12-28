@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Main Game Screen -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/st2_br_game_play_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/st2_br_lottie_passenger"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/running_passenger" />
+
+        <TextView
+            android:id="@+id/st2_br_tv_distance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            app:layout_constraintBottom_toTopOf="@+id/st2_br_tv_lives"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/st2_br_lottie_passenger"
+            app:layout_constraintTop_toTopOf="@id/st2_br_lottie_passenger"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Còn lại: 100m" />
+
+        <TextView
+            android:id="@+id/st2_br_tv_lives"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textColor="?attr/colorError"
+            app:layout_constraintBottom_toBottomOf="@id/st2_br_lottie_passenger"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/st2_br_lottie_passenger"
+            app:layout_constraintTop_toBottomOf="@id/st2_br_tv_distance"
+            tools:text="Mạng: 5" />
+
+        <TextView
+            android:id="@+id/st2_br_tv_question"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:minHeight="100dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/st2_br_lottie_passenger"
+            tools:text="'Gate' có nghĩa là gì?" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/st2_br_tv_question">
+
+            <Button
+                android:id="@+id/st2_br_btn_answer_a"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/st2_br_btn_answer_b"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/st2_br_btn_answer_c"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Result Screen (Win/Loss) -->
+    <LinearLayout
+        android:id="@+id/st2_br_result_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/st2_br_lottie_result"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="false" />
+
+        <TextView
+            android:id="@+id/st2_br_tv_result_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            tools:text="Bạn đã kịp chuyến bay!" />
+
+        <Button
+            android:id="@+id/st2_br_btn_play_again"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Chơi lại" />
+
+    </LinearLayout>
+
+</FrameLayout>

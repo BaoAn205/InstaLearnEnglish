@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ST1_LessonActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_lesson"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#9575CD"
+            app:title="Di chuyển"
+            app:titleTextColor="#FFFFFF"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="#FFFFFF" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout_lesson"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:tabTextColor="#757575"
+            app:tabSelectedTextColor="#673AB7"
+            app:tabIndicatorColor="#673AB7">
+
+            <com.google.android.material.tabs.TabItem
+                android:text="Tip" />
+
+            <com.google.android.material.tabs.TabItem
+                android:text="Vocab" />
+
+            <com.google.android.material.tabs.TabItem
+                android:text="Simulation" />
+
+            <com.google.android.material.tabs.TabItem
+                android:text="Game" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager_lesson"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

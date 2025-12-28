@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/st3_scramble_tv_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="20" />
+
+    <TextView
+        android:id="@+id/st3_scramble_tv_instruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Sắp xếp lại câu sau đây"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/st3_scramble_tv_timer" />
+
+    <TextView
+        android:id="@+id/st3_scramble_tv_sentence_vi"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/st3_scramble_tv_instruction"
+        tools:text="Làm ơn cho tôi một vé đơn."/>
+
+    <!-- Answer Area -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/st3_scramble_card_answer"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="16dp"
+        app:cardBackgroundColor="#EFEFEF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/st3_scramble_tv_sentence_vi">
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/st3_scramble_flexbox_answer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            app:alignContent="flex_start"
+            app:flexWrap="wrap" />
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Word Bank/Choices -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/st3_scramble_card_choices"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/st3_scramble_btn_check"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/st3_scramble_card_answer">
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/st3_scramble_flexbox_choices"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            app:alignContent="flex_start"
+            app:flexWrap="wrap" />
+    </androidx.cardview.widget.CardView>
+
+
+    <Button
+        android:id="@+id/st3_scramble_btn_check"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Kiểm tra"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Feedback Animations -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/st3_scramble_lottie_checkmark"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/checkmark" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/st3_scramble_lottie_failed"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/failed" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
