@@ -1,16 +1,18 @@
 package com.example.instalearnenglish.feature.station23.model;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.RawRes;
 
 public class GameMenuItem {
     private final String title;
-    @DrawableRes
-    private final int iconResId;
+    // This can be used for both Drawable and Raw resources
+    @RawRes @DrawableRes
+    private final int resourceId;
     private final Class<?> fragmentClass; // The fragment to launch for this game
 
-    public GameMenuItem(String title, @DrawableRes int iconResId, Class<?> fragmentClass) {
+    public GameMenuItem(String title, @RawRes @DrawableRes int resourceId, Class<?> fragmentClass) {
         this.title = title;
-        this.iconResId = iconResId;
+        this.resourceId = resourceId;
         this.fragmentClass = fragmentClass;
     }
 
@@ -18,8 +20,8 @@ public class GameMenuItem {
         return title;
     }
 
-    public int getIconResId() {
-        return iconResId;
+    public int getResourceId() {
+        return resourceId;
     }
 
     public Class<?> getFragmentClass() {

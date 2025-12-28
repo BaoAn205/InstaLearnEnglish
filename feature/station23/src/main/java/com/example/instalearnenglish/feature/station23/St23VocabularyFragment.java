@@ -1,17 +1,13 @@
 package com.example.instalearnenglish.feature.station23;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.content.Context;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,89 +22,87 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class St23VocabularyFragment extends Fragment implements St23VocabularyAdapter.OnVocabItemInteractionListener, TextToSpeech.OnInitListener {
+public class St23VocabularyFragment extends Fragment implements St23VocabularyAdapter.OnVocabItemInteractionListener {
 
     private RecyclerView recyclerView;
     private St23VocabularyAdapter adapter;
     private List<St23VocabItem> vocabList;
     private TextToSpeech tts;
-    private Context mContext;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        mContext = context;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        tts = new TextToSpeech(mContext, this);
-    }
+    private AnimatorSet frontAnim, backAnim;
+    private boolean isFront = true;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.st23_fragment_vocabulary, container, false);
-        recyclerView = view.findViewById(R.id.st23_rv_flashcards);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        loadVocabData();
-        
-        // Pass the themed context from the fragment to the adapter
-        adapter = new St23VocabularyAdapter(mContext, vocabList, this);
-        recyclerView.setAdapter(adapter);
-        return view;
-    }
-
-    private void loadVocabData() {
-        vocabList = new ArrayList<>();
-        vocabList.add(new St23VocabItem("Boarding Pass", "Thẻ Lên Máy Bay"));
-        vocabList.add(new St23VocabItem("Gate", "Cổng Chờ"));
-        vocabList.add(new St23VocabItem("Delay", "Trì hoãn"));
-        vocabList.add(new St23VocabItem("Departure", "Sự khởi hành"));
-        vocabList.add(new St23VocabItem("Arrival", "Sự đến nơi"));
+        return inflater.inflate(R.layout.st23_fragment_vocabulary, container, false);
     }
 
     @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            int result = tts.setLanguage(Locale.US);
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("TTS", "The Language specified is not supported!");
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Corrected the ID to match the layout file
+        recyclerView = view.findViewById(R.id.st23_rv_flashcards);
+
+        // Initialize TextToSpeech
+        tts = new TextToSpeech(getContext(), status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                int result = tts.setLanguage(Locale.US);
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Toast.makeText(getContext(), "Language not supported", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getContext(), "TTS Initialization failed", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Log.e("TTS", "Initialization Failed!");
-        }
+        });
+
+        // Prepare animations
+        float scale = getResources().getDisplayMetrics().density;
+        view.setCameraDistance(8000 * scale);
+        // TODO: The animator files might need to be created if they don't exist in station23 module
+        // frontAnim = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.card_flip_out);
+        // backAnim = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.card_flip_in);
+
+        // Setup RecyclerView
+        setupRecyclerView();
+    }
+
+    private void setupRecyclerView() {
+        vocabList = new ArrayList<>();
+        vocabList.add(new St23VocabItem("Boarding Pass", "", 0, "Thẻ Lên Máy Bay", ""));
+        vocabList.add(new St23VocabItem("Gate", "", 0, "Cổng Chờ", ""));
+        vocabList.add(new St23VocabItem("Delay", "", 0, "Trì hoãn", ""));
+        vocabList.add(new St23VocabItem("Departure", "", 0, "Sự khởi hành", ""));
+        vocabList.add(new St23VocabItem("Arrival", "", 0, "Sự đến nơi", ""));
+
+        adapter = new St23VocabularyAdapter(getContext(), vocabList, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
     public void onSpeakClicked(String textToSpeak) {
-        tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
+        if (tts != null && !tts.isSpeaking()) {
+            tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
     }
 
     @Override
-    public void onCardClicked(final View cardFront, final View cardBack) {
-        final boolean isShowingFront = cardFront.getAlpha() > 0;
-        final View viewToFlip = isShowingFront ? cardFront : cardBack;
-        final View newView = isShowingFront ? cardBack : cardFront;
-
-        ObjectAnimator flipOut = ObjectAnimator.ofFloat(viewToFlip, "rotationY", 0f, 90f);
-        flipOut.setDuration(250);
-        flipOut.setInterpolator(new AccelerateDecelerateInterpolator());
-
-        final ObjectAnimator flipIn = ObjectAnimator.ofFloat(newView, "rotationY", -90f, 0f);
-        flipIn.setDuration(250);
-        flipIn.setInterpolator(new DecelerateInterpolator());
-
-        flipOut.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                viewToFlip.setAlpha(0f);
-                newView.setAlpha(1f);
-                flipIn.start();
-            }
-        });
-        flipOut.start();
+    public void onCardClicked(View cardFront, View cardBack) {
+        // This logic is for the old flashcard UI and might not be used anymore
+        if (isFront) {
+            if (frontAnim != null) frontAnim.setTarget(cardFront);
+            if (backAnim != null) backAnim.setTarget(cardBack);
+            if (frontAnim != null) frontAnim.start();
+            if (backAnim != null) backAnim.start();
+            isFront = false;
+        } else {
+            if (frontAnim != null) frontAnim.setTarget(cardBack);
+            if (backAnim != null) backAnim.setTarget(cardFront);
+            if (backAnim != null) backAnim.start();
+            if (frontAnim != null) frontAnim.start();
+            isFront = true;
+        }
     }
 
     @Override

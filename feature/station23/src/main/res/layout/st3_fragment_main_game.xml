@@ -17,44 +17,22 @@
             android:id="@+id/st3_header_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mini Games"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+            android:text="Mini Games Challenge"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/st3_header_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chọn trò chơi để bắt đầu"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/st3_header_title" />
-
-        <Button
-            android:id="@+id/st3_btn_quiz_game"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/st3_rv_game_menu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Trắc nghiệm nhanh"
-            app:layout_constraintTop_toBottomOf="@id/st3_header_subtitle" />
-
-        <Button
-            android:id="@+id/st3_btn_match_game"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="16dp"
-            android:text="Nối từ vựng"
-            app:layout_constraintTop_toBottomOf="@id/st3_btn_quiz_game" />
-
-        <Button
-            android:id="@+id/st3_btn_scramble_game"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Sắp xếp câu siêu tốc"
-            app:layout_constraintTop_toBottomOf="@id/st3_btn_match_game" />
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            app:layout_constraintTop_toBottomOf="@id/st3_header_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:listitem="@layout/st3_item_game_card" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

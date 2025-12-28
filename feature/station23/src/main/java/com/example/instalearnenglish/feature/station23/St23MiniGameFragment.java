@@ -25,10 +25,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.instalearnenglish.feature.station23.adapter.ScannerAdapter;
+import com.example.instalearnenglish.feature.station23.adapter.St3GameMenuAdapter;
 import com.example.instalearnenglish.feature.station23.model.AnnouncementQuestion;
 import com.example.instalearnenglish.feature.station23.model.AnnouncementQuestionProvider;
 import com.example.instalearnenglish.feature.station23.model.BoardingRushQuestion;
 import com.example.instalearnenglish.feature.station23.model.BoardingRushQuestionProvider;
+import com.example.instalearnenglish.feature.station23.model.GameMenuItem;
 import com.example.instalearnenglish.feature.station23.model.ScannerItem;
 import com.example.instalearnenglish.feature.station23.model.ScannerItemProvider;
 
@@ -36,11 +38,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class St23MiniGameFragment extends Fragment {
+public class St23MiniGameFragment extends Fragment implements St3GameMenuAdapter.OnGameClickListener {
 
     // Main Containers
     private View menuContainer, scannerGameContainer, announcementGameContainer, boardingRushGameContainer;
-    private Button btnShowScannerGame, btnShowAnnouncementGame, btnShowBoardingRushGame;
+    private RecyclerView rvGameMenu;
 
     // --- Vocabulary Scanner Game ---
     private View scannerMemorizeContainer, scannerQuestionContainer;
@@ -90,23 +92,40 @@ public class St23MiniGameFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         menuContainer = view.findViewById(R.id.st2_game_menu_container);
-        scannerGameContainer = view.findViewById(R.id.st23_security_game_container); // Re-using old container
+        scannerGameContainer = view.findViewById(R.id.st23_security_game_container);
         announcementGameContainer = view.findViewById(R.id.st2_announcement_game_container);
         boardingRushGameContainer = view.findViewById(R.id.st2_boarding_rush_game_container);
+        rvGameMenu = menuContainer.findViewById(R.id.st2_rv_game_menu);
 
-        btnShowScannerGame = view.findViewById(R.id.st2_btn_security_challenge); // Re-using old button
-        btnShowAnnouncementGame = view.findViewById(R.id.st2_btn_announcement_game);
-        btnShowBoardingRushGame = view.findViewById(R.id.st2_btn_boarding_rush_game);
-
-        btnShowScannerGame.setText("Soi Từ Vựng");
-        btnShowScannerGame.setOnClickListener(v -> showScannerGame());
-        btnShowAnnouncementGame.setOnClickListener(v -> showAnnouncementGame());
-        btnShowBoardingRushGame.setOnClickListener(v -> showBoardingRushGame());
-        btnShowBoardingRushGame.setEnabled(true); // Ensure this is enabled
-
+        setupNewGameMenu();
         setupSounds();
         showMenu();
     }
+
+    private void setupNewGameMenu() {
+        rvGameMenu.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        List<GameMenuItem> gameList = new ArrayList<>();
+        // Using available animations as placeholders to fix build error
+        gameList.add(new GameMenuItem("Soi Từ Vựng", R.raw.animation_quiz, null)); // Placeholder for animation_scanner
+        gameList.add(new GameMenuItem("Lắng nghe Thông báo", R.raw.animation_word_match, null)); // Placeholder for animation_announcement
+        gameList.add(new GameMenuItem("Đến kịp giờ bay", R.raw.animation_boarding_rush, null));
+
+        St3GameMenuAdapter adapter = new St3GameMenuAdapter(getContext(), gameList, this);
+        rvGameMenu.setAdapter(adapter);
+    }
+
+    @Override
+    public void onGameClick(GameMenuItem game) {
+        if (game.getTitle().contains("Soi Từ Vựng")) {
+            showScannerGame();
+        } else if (game.getTitle().contains("Lắng nghe")) {
+            showAnnouncementGame();
+        } else if (game.getTitle().contains("kịp giờ bay")) {
+            showBoardingRushGame();
+        }
+    }
+
+    // --- ALL ORIGINAL CODE BELOW IS PRESERVED ---
 
     private void setupSounds() {
         AudioAttributes audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build();
@@ -177,7 +196,6 @@ public class St23MiniGameFragment extends Fragment {
         startBoardingRushGame();
     }
 
-    // --- Vocabulary Scanner Game Logic ---
     private void setupScannerGame(View gameView) {
         scannerMemorizeContainer = gameView.findViewById(R.id.st2_scanner_memorize_container);
         scannerQuestionContainer = gameView.findViewById(R.id.st2_scanner_question_container);
@@ -282,7 +300,6 @@ public class St23MiniGameFragment extends Fragment {
         }
     }
 
-    // --- Announcement Game Logic ---
     private void setupAnnouncementGameViews(View announcementGameView) {
         lottiePlayAudio = announcementGameView.findViewById(R.id.st2_lottie_play_audio);
         tvAnnouncementQuestion = announcementGameView.findViewById(R.id.st2_tv_announcement_question);
@@ -340,7 +357,6 @@ public class St23MiniGameFragment extends Fragment {
         }
     }
 
-    // --- Boarding Rush Game Logic ---
     private void setupBoardingRushGame(View gameView) {
         brGamePlayContainer = gameView.findViewById(R.id.st2_br_game_play_container);
         brResultContainer = gameView.findViewById(R.id.st2_br_result_container);
@@ -436,7 +452,6 @@ public class St23MiniGameFragment extends Fragment {
         brTvResultMessage.setText("Bạn đã trễ chuyến bay!");
     }
 
-    // --- Common Sound & Lifecycle ---
     private void startBackgroundMusic(int resId) {
         stopBackgroundMusic();
         backgroundMusicPlayer = MediaPlayer.create(getContext(), resId);

@@ -8,12 +8,13 @@ public class MatchGameDataProvider {
     public static List<St23VocabItem> getStation3MatchData() {
         List<St23VocabItem> vocabList = new ArrayList<>();
         
-        vocabList.add(new St23VocabItem("Subway", "Tàu điện ngầm"));
-        vocabList.add(new St23VocabItem("Ticket machine", "Máy bán vé"));
-        vocabList.add(new St23VocabItem("Platform", "Sân ga"));
-        vocabList.add(new St23VocabItem("Map", "Bản đồ"));
-        vocabList.add(new St23VocabItem("One-way ticket", "Vé một chiều"));
-        vocabList.add(new St23VocabItem("Round trip", "Vé khứ hồi"));
+        // Updated constructor to match the new St23VocabItem signature
+        vocabList.add(new St23VocabItem("Subway", "", 0, "Tàu điện ngầm", ""));
+        vocabList.add(new St23VocabItem("Ticket machine", "", 0, "Máy bán vé", ""));
+        vocabList.add(new St23VocabItem("Platform", "", 0, "Sân ga", ""));
+        vocabList.add(new St23VocabItem("Map", "", 0, "Bản đồ", ""));
+        vocabList.add(new St23VocabItem("One-way ticket", "", 0, "Vé một chiều", ""));
+        vocabList.add(new St23VocabItem("Round trip", "", 0, "Vé khứ hồi", ""));
 
         return vocabList;
     }

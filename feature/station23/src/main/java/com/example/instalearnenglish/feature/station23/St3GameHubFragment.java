@@ -20,11 +20,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.instalearnenglish.feature.station23.adapter.St3GameMenuAdapter;
 import com.example.instalearnenglish.feature.station23.adapter.St3MatchAdapter;
+import com.example.instalearnenglish.feature.station23.model.GameMenuItem;
 import com.example.instalearnenglish.feature.station23.model.MatchGameDataProvider;
 import com.example.instalearnenglish.feature.station23.model.QuizDataProvider;
 import com.example.instalearnenglish.feature.station23.model.QuizQuestion;
@@ -38,11 +41,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class St3GameHubFragment extends Fragment {
+public class St3GameHubFragment extends Fragment implements St3GameMenuAdapter.OnGameClickListener {
 
     // Main Containers
     private View menuContainer, quizGameContainer, matchGameContainer, scrambleGameContainer;
-    private Button btnShowQuizGame, btnShowMatchGame, btnShowScrambleGame;
+    private RecyclerView rvGameMenu;
 
     // --- Quiz Game ---
     private TextView tvQuizQuestion, tvQuizTimer;
@@ -98,24 +101,35 @@ public class St3GameHubFragment extends Fragment {
         matchGameContainer = view.findViewById(R.id.st3_match_game_layout);
         scrambleGameContainer = view.findViewById(R.id.st3_scramble_game_container);
 
-        // Reverted to original Button setup
-        btnShowQuizGame = view.findViewById(R.id.st3_btn_quiz_game);
-        btnShowMatchGame = view.findViewById(R.id.st3_btn_match_game);
-        btnShowScrambleGame = view.findViewById(R.id.st3_btn_scramble_game);
-
-        btnShowQuizGame.setText("Trắc nghiệm nhanh");
-        btnShowMatchGame.setText("Nối từ siêu tốc");
-        btnShowScrambleGame.setText("Sắp xếp câu siêu tốc");
-
-        btnShowQuizGame.setOnClickListener(v -> showQuizGame());
-        btnShowMatchGame.setOnClickListener(v -> showMatchGame());
-        btnShowScrambleGame.setOnClickListener(v -> showScrambleGame());
-        btnShowScrambleGame.setEnabled(true);
-
+        setupNewGameMenu();
         setupSounds();
         showMenu();
     }
 
+    private void setupNewGameMenu() {
+        rvGameMenu = menuContainer.findViewById(R.id.st3_rv_game_menu);
+        rvGameMenu.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        List<GameMenuItem> gameList = new ArrayList<>();
+        gameList.add(new GameMenuItem("Trắc nghiệm nhanh", R.raw.animation_quiz, null));
+        gameList.add(new GameMenuItem("Nối từ siêu tốc", R.raw.animation_word_match, null));
+        gameList.add(new GameMenuItem("Sắp xếp câu", R.raw.animation_sentence_scramble, null));
+
+        St3GameMenuAdapter menuAdapter = new St3GameMenuAdapter(getContext(), gameList, this);
+        rvGameMenu.setAdapter(menuAdapter);
+    }
+
+    @Override
+    public void onGameClick(GameMenuItem game) {
+        if (game.getTitle().contains("Trắc nghiệm")) {
+            showQuizGame();
+        } else if (game.getTitle().contains("Nối từ")) {
+            showMatchGame();
+        } else if (game.getTitle().contains("Sắp xếp")) {
+            showScrambleGame();
+        }
+    }
+    
     private void setupSounds() {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_GAME)
@@ -185,7 +199,6 @@ public class St3GameHubFragment extends Fragment {
         startBackgroundMusic(R.raw.gameplay3_4);
     }
 
-    // --- Quiz Game Logic ---
     private void setupQuizGame(View quizView) {
         tvQuizQuestion = quizView.findViewById(R.id.st3_tv_quiz_question);
         tvQuizTimer = quizView.findViewById(R.id.st3_tv_quiz_timer);
@@ -255,7 +268,6 @@ public class St3GameHubFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(this::displayCurrentQuestion, 1500);
     }
 
-    // --- Match Game Logic ---
     private void setupMatchGame(View matchView) {
         tvMatchTimer = matchView.findViewById(R.id.st3_tv_match_timer);
         rvEnglish = matchView.findViewById(R.id.st3_rv_english_words);
@@ -276,7 +288,7 @@ public class St3GameHubFragment extends Fragment {
         englishWords.clear();
         vietnameseWords.clear();
         for (St23VocabItem item : originalVocabList) {
-            englishWords.add(item.getEnglishWord());
+            englishWords.add(item.getName()); // Corrected method call
             vietnameseWords.add(item.getVietnameseMeaning());
         }
         Collections.shuffle(vietnameseWords);
@@ -305,7 +317,7 @@ public class St3GameHubFragment extends Fragment {
         if (selectedEnglishWord == null || selectedVietnameseWord == null) return;
         boolean isMatch = false;
         for (St23VocabItem item : originalVocabList) {
-            if (item.getEnglishWord().equals(selectedEnglishWord) && item.getVietnameseMeaning().equals(selectedVietnameseWord)) {
+            if (item.getName().equals(selectedEnglishWord) && item.getVietnameseMeaning().equals(selectedVietnameseWord)) { // Corrected method call
                 isMatch = true;
                 break;
             }
@@ -438,7 +450,6 @@ public class St3GameHubFragment extends Fragment {
         }, 1500);
     }
 
-    // --- Common ---
     private void setupFeedbackAnimations(LottieAnimationView checkmark, LottieAnimationView failed) {
         if (checkmark != null) {
             checkmark.enableMergePathsForKitKatAndAbove(true);
