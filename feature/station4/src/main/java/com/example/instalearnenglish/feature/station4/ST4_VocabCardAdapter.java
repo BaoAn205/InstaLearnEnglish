@@ -6,11 +6,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ST4_VocabCardAdapter extends RecyclerView.Adapter<ST4_VocabCardAdapter.VocabViewHolder> {
 
@@ -42,6 +52,7 @@ public class ST4_VocabCardAdapter extends RecyclerView.Adapter<ST4_VocabCardAdap
         private final FrameLayout cardFlipperContainer;
         private final TextView word, pronunciation, meaning;
         private final ImageView image;
+        private final ImageButton btnArchive;
         private boolean isFront = true;
 
         public VocabViewHolder(@NonNull View itemView) {
@@ -53,15 +64,36 @@ public class ST4_VocabCardAdapter extends RecyclerView.Adapter<ST4_VocabCardAdap
             pronunciation = flashcardBack.findViewById(R.id.flashcard_pronunciation);
             meaning = flashcardBack.findViewById(R.id.flashcard_meaning);
             image = flashcardBack.findViewById(R.id.flashcard_image);
+            btnArchive = flashcardBack.findViewById(R.id.btn_archive_vocab);
         }
 
         void bind(ST4_Vocabulary vocab) {
             word.setText(vocab.getWord());
             pronunciation.setText(vocab.getPronunciation());
             meaning.setText(vocab.getMeaning());
-            // TODO: Load image from URL using Glide/Picasso
 
             cardFlipperContainer.setOnClickListener(v -> flipCard());
+
+            btnArchive.setOnClickListener(v -> {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null) {
+                    Toast.makeText(itemView.getContext(), "You must be logged in to archive words.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Map<String, Object> vocabData = new HashMap<>();
+                vocabData.put("name", vocab.getWord());
+                vocabData.put("phonetic", vocab.getPronunciation());
+                vocabData.put("vietnamese", vocab.getMeaning());
+                vocabData.put("station", 4);
+
+                db.collection("users").document(user.getUid()).collection("archived_vocabs")
+                        .document(vocab.getWord())
+                        .set(vocabData)
+                        .addOnSuccessListener(aVoid -> Toast.makeText(itemView.getContext(), "Saved to Archive!", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(itemView.getContext(), "Failed to save.", Toast.LENGTH_SHORT).show());
+            });
         }
 
         private void flipCard() {

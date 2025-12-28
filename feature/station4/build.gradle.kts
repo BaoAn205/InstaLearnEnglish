@@ -36,6 +36,8 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
+    implementation(project(":feature:home"))
+    
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)

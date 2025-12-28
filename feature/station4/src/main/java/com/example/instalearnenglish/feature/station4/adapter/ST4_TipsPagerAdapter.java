@@ -8,14 +8,21 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instalearnenglish.feature.station4.R;
 import com.example.instalearnenglish.feature.station4.model.Tip;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ST4_TipsPagerAdapter extends RecyclerView.Adapter<ST4_TipsPagerAdapter.ViewHolder> {
@@ -53,6 +60,7 @@ public class ST4_TipsPagerAdapter extends RecyclerView.Adapter<ST4_TipsPagerAdap
         private final TextView tvTipContent;
         private final TextView tvTipTranslation;
         private final ImageButton btnSpeak;
+        private final ImageButton btnArchive;
         private final Button btnShowTranslation;
 
         ViewHolder(View view) {
@@ -62,6 +70,7 @@ public class ST4_TipsPagerAdapter extends RecyclerView.Adapter<ST4_TipsPagerAdap
             tvTipContent = view.findViewById(R.id.tv_tip_content);
             tvTipTranslation = view.findViewById(R.id.tv_tip_translation);
             btnSpeak = view.findViewById(R.id.btn_speak_tip);
+            btnArchive = view.findViewById(R.id.btn_archive_tip);
             btnShowTranslation = view.findViewById(R.id.btn_show_translation);
         }
 
@@ -97,6 +106,27 @@ public class ST4_TipsPagerAdapter extends RecyclerView.Adapter<ST4_TipsPagerAdap
                     btnShowTranslation.setText("Xem bản dịch");
                     expandedPositions.remove(position);
                 }
+            });
+
+            btnArchive.setOnClickListener(v -> {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null) {
+                    Toast.makeText(itemView.getContext(), "You must be logged in to archive tips.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Map<String, Object> tipData = new HashMap<>();
+                tipData.put("title", tip.getTitle());
+                tipData.put("content", tip.getContent());
+                tipData.put("vietnamese", tip.getVietnameseMeaning());
+                tipData.put("station", 4);
+
+                db.collection("users").document(user.getUid()).collection("archived_tips")
+                        .document(tip.getTitle())
+                        .set(tipData)
+                        .addOnSuccessListener(aVoid -> Toast.makeText(itemView.getContext(), "Saved to Archive!", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(itemView.getContext(), "Failed to save.", Toast.LENGTH_SHORT).show());
             });
         }
     }

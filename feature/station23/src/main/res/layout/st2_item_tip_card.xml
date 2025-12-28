@@ -33,11 +33,13 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/btn_star_big_off"
-                android:visibility="gone"
+                android:src="@drawable/ic_archive_outline"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:visibility="visible"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:tint="#9C27B0" />
+                app:tint="#757575" />
 
             <TextView
                 android:id="@+id/st2_tip_card_title"

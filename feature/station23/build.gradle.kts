@@ -38,6 +38,8 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
+    implementation(project(":feature:home"))
+    
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
@@ -48,4 +50,7 @@ dependencies {
     
     // THE FIX: Added Flexbox library
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
 }

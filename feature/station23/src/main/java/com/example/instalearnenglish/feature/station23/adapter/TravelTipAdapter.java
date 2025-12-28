@@ -5,17 +5,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instalearnenglish.feature.station23.R;
 import com.example.instalearnenglish.feature.station23.model.TravelTip;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class TravelTipAdapter extends RecyclerView.Adapter<TravelTipAdapter.TipViewHolder> {
@@ -79,6 +86,27 @@ public class TravelTipAdapter extends RecyclerView.Adapter<TravelTipAdapter.TipV
             }
             notifyItemChanged(position);
         });
+
+        holder.btnSave.setOnClickListener(v -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                Toast.makeText(context, "You must be logged in to archive tips.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Map<String, Object> tipData = new HashMap<>();
+            tipData.put("title", tip.getTitle());
+            tipData.put("content", tip.getContent());
+            tipData.put("vietnamese", tip.getVietnameseMeaning());
+            tipData.put("station", stationId);
+
+            db.collection("users").document(user.getUid()).collection("archived_tips")
+                    .document(tip.getTitle())
+                    .set(tipData)
+                    .addOnSuccessListener(aVoid -> Toast.makeText(context, "Saved to Archive!", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(context, "Failed to save.", Toast.LENGTH_SHORT).show());
+        });
     }
 
     @Override
@@ -94,6 +122,7 @@ public class TravelTipAdapter extends RecyclerView.Adapter<TravelTipAdapter.TipV
         ImageView playButton;
         Button btnShowTranslation;
         View divider;
+        ImageButton btnSave;
 
         public TipViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,6 +133,7 @@ public class TravelTipAdapter extends RecyclerView.Adapter<TravelTipAdapter.TipV
             playButton = itemView.findViewById(R.id.st2_tip_card_play_button);
             btnShowTranslation = itemView.findViewById(R.id.btn_show_translation);
             divider = itemView.findViewById(R.id.divider);
+            btnSave = itemView.findViewById(R.id.st2_tip_card_save_button);
         }
     }
 }
