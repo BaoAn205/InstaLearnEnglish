@@ -9,6 +9,11 @@ public class ST4_SimulationStep {
     // Required for Firestore
     public ST4_SimulationStep() {}
 
+    public ST4_SimulationStep(String dialogue, List<ST4_SimulationOption> options) {
+        this.dialogue = dialogue;
+        this.options = options;
+    }
+
     public String getDialogue() {
         return dialogue;
     }

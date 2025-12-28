@@ -21,7 +21,7 @@ class Station4Activity : AppCompatActivity() {
             setupToolbar()
             setupViewPager()
         } catch (e: Exception) {
-            Toast.makeText(this, "Lỗi nạp bài học Trạm 4: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error loading Station 4: ${e.message}", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
@@ -29,6 +29,7 @@ class Station4Activity : AppCompatActivity() {
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.title = "Station 4: Hotel"
         binding.toolbar.setNavigationOnClickListener { 
             val intent = Intent()
             intent.setClassName(this, "com.example.instalearnenglish.feature.home.HomeActivity")

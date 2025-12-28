@@ -64,11 +64,6 @@ public class ST4_LessonGameFragment extends Fragment {
         gameList = new ArrayList<>();
         gameList.add(new ST4_Game("The Polite Guest", "POLITE_GUEST", R.raw.game_quiz, true));
         gameList.add(new ST4_Game("Room Service Master", "ROOM_SERVICE_MASTER", R.raw.game_match, true));
-        gameList.add(new ST4_Game("Word → Image Match", "WORD_IMAGE_MATCH", R.raw.game_match, true));
-        gameList.add(new ST4_Game("Guess My Trip", "GUESS_MY_TRIP", R.raw.game_guess, true));
-        gameList.add(new ST4_Game("Emoji Packing", "EMOJI_PACKING", R.raw.game_emoji, true));
-        gameList.add(new ST4_Game("What’s in My Bag?", "WHATS_IN_MY_BAG", R.raw.game_audio, true));
-        gameList.add(new ST4_Game("Forgot Something!", "FORGOT_SOMETHING", R.raw.game_memory, true));
     }
 
     public static class ST4_Game {

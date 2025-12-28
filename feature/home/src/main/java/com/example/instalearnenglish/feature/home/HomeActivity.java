@@ -2,7 +2,10 @@ package com.example.instalearnenglish.feature.home;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -36,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private MediaPlayer clickSoundPlayer;
+    private static final int DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE = 1222;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,30 @@ public class HomeActivity extends AppCompatActivity {
         setupBottomNavigation();
 
         clickSoundPlayer = MediaPlayer.create(this, R.raw.click_to_station);
+        
+        checkOverlayPermission();
+    }
+
+    private void checkOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Settings.canDrawOverlays(this)) {
+                    // Permission granted
+                }
+            }
+        }
     }
 
     @Override
@@ -86,7 +114,6 @@ public class HomeActivity extends AppCompatActivity {
         DocumentReference userDocRef = db.collection("users").document(currentUser.getUid());
 
         userDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            // MẶC ĐỊNH MỞ KHÓA HẾT CÁC TRẠM ĐỂ TEST (Set level = 5)
             updateJourneyUI(5L);
             
             if (documentSnapshot != null && documentSnapshot.exists()) {

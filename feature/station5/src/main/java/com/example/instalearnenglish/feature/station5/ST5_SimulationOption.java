@@ -6,22 +6,17 @@ public class ST5_SimulationOption {
     private String response;
     private String nextStep;
 
-    // Required for Firestore
     public ST5_SimulationOption() {}
 
-    public String getText() {
-        return text;
+    public ST5_SimulationOption(String text, boolean isCorrect, String response, String nextStep) {
+        this.text = text;
+        this.isCorrect = isCorrect;
+        this.response = response;
+        this.nextStep = nextStep;
     }
 
-    public boolean isCorrect() {
-        return isCorrect;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public String getNextStep() {
-        return nextStep;
-    }
+    public String getText() { return text; }
+    public boolean isCorrect() { return isCorrect; }
+    public String getResponse() { return response; }
+    public String getNextStep() { return nextStep; }
 }

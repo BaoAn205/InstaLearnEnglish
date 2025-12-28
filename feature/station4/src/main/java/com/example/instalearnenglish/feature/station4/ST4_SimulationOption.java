@@ -9,6 +9,13 @@ public class ST4_SimulationOption {
     // Required for Firestore
     public ST4_SimulationOption() {}
 
+    public ST4_SimulationOption(String text, boolean isCorrect, String response, String nextStep) {
+        this.text = text;
+        this.isCorrect = isCorrect;
+        this.response = response;
+        this.nextStep = nextStep;
+    }
+
     public String getText() {
         return text;
     }

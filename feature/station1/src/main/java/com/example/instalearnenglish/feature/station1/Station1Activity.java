@@ -64,12 +64,6 @@ public class Station1Activity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-
-        binding.btnDictionary.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            intent.setClassName(this, "com.example.instalearnenglish.feature.home.tools.DictionaryActivity");
-            startActivity(intent);
-        });
     }
 
     private void setupViewPager() {

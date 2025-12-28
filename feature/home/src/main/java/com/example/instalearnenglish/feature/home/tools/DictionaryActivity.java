@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -45,6 +48,7 @@ public class DictionaryActivity extends AppCompatActivity {
     private FeatureHomeDictionaryBinding binding;
     private MediaPlayer mediaPlayer;
     private RecentSearchesAdapter recentSearchesAdapter;
+    private static final int OVERLAY_PERMISSION_REQ_CODE = 1234;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,37 @@ public class DictionaryActivity extends AppCompatActivity {
         setupBackButton();
         setupPopularWords();
         setupBottomNavigation();
+        setupFloatingSwitch();
+    }
+
+    private void setupFloatingSwitch() {
+        binding.switchFloatingDictionary.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
+                    binding.switchFloatingDictionary.setChecked(false);
+                } else {
+                    startService(new Intent(this, FloatingDictionaryService.class));
+                }
+            } else {
+                stopService(new Intent(this, FloatingDictionaryService.class));
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this)) {
+                binding.switchFloatingDictionary.setChecked(true);
+                startService(new Intent(this, FloatingDictionaryService.class));
+            } else {
+                Toast.makeText(this, "Permission denied. Mini Mode cannot be enabled.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override

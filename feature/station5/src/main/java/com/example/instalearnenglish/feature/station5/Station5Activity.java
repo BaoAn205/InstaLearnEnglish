@@ -47,7 +47,7 @@ public class Station5Activity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Lỗi khởi tạo Trạm 5: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error initializing Station 5: " + e.getMessage(), Toast.LENGTH_LONG).show();
             finish();
         }
     }
@@ -59,18 +59,13 @@ public class Station5Activity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
+        binding.toolbarTitle.setText("Station 5: Dining & Shopping");
         binding.btnBack.setOnClickListener(v -> {
             Intent intent = new Intent();
             intent.setClassName(this, "com.example.instalearnenglish.feature.home.HomeActivity");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
             finish();
-        });
-
-        binding.btnDictionary.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            intent.setClassName(this, "com.example.instalearnenglish.feature.home.tools.DictionaryActivity");
-            startActivity(intent);
         });
     }
 

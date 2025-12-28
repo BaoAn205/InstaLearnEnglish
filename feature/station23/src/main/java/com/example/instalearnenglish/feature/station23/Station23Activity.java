@@ -39,6 +39,9 @@ public class Station23Activity extends AppCompatActivity {
         // Pass stationId to the PagerAdapter
         pagerAdapter = new Station23PagerAdapter(this, stationId);
         viewPager.setAdapter(pagerAdapter);
+        
+        // Vô hiệu hóa lướt ngang của ViewPager để ưu tiên lướt các thẻ Tip
+        viewPager.setUserInputEnabled(false);
 
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> {

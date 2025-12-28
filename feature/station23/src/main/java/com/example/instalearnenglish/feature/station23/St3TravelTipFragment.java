@@ -65,7 +65,8 @@ public class St3TravelTipFragment extends Fragment implements TravelTipAdapter.O
         tips = TravelTipProvider.getStation3Tips();
         adapter = new TravelTipAdapter(getContext(), tips, this);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        // Đổi sang hướng lướt NGANG
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 

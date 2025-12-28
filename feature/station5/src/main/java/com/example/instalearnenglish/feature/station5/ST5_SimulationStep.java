@@ -6,14 +6,13 @@ public class ST5_SimulationStep {
     private String dialogue;
     private List<ST5_SimulationOption> options;
 
-    // Required for Firestore
     public ST5_SimulationStep() {}
 
-    public String getDialogue() {
-        return dialogue;
+    public ST5_SimulationStep(String dialogue, List<ST5_SimulationOption> options) {
+        this.dialogue = dialogue;
+        this.options = options;
     }
 
-    public List<ST5_SimulationOption> getOptions() {
-        return options;
-    }
+    public String getDialogue() { return dialogue; }
+    public List<ST5_SimulationOption> getOptions() { return options; }
 }

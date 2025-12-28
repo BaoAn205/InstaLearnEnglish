@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton; 
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -27,24 +28,25 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class ST5_LessonSimulationFragment extends Fragment {
 
-    private LinearLayout chatContainer, optionsContainer, recordingContainer;
+    private LinearLayout chatContainer, optionsContainer, recordingContainer, scenarioSelectionContainer;
+    private View chatMainLayout;
     private ScrollView scrollView;
     private MaterialButton recordButton;
-    private TextView recognitionResultText;
-    private FirebaseFirestore db;
-    private String lessonId;
-    private String currentStepId = "step1";
+    private TextView recognitionResultText, tvTargetSentence;
     private String nextStepIdAfterRecording;
 
     private TextToSpeech tts;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private Map<String, ST5_SimulationStep> mockData;
 
     private final ActivityResultLauncher<Intent> speechResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -74,14 +76,9 @@ public class ST5_LessonSimulationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (getArguments() != null) {
-            lessonId = getArguments().getString("LESSON_ID");
-        }
         tts = new TextToSpeech(getContext(), status -> {
             if (status == TextToSpeech.SUCCESS) {
                 tts.setLanguage(Locale.US);
-            } else {
-                Log.e("TTS", "Initialization Failed!");
             }
         });
         return inflater.inflate(R.layout.st5_fragment_lesson_simulation, container, false);
@@ -96,12 +93,100 @@ public class ST5_LessonSimulationFragment extends Fragment {
         recordingContainer = view.findViewById(R.id.recording_container);
         recordButton = view.findViewById(R.id.record_button);
         recognitionResultText = view.findViewById(R.id.recognition_result_text);
-        db = FirebaseFirestore.getInstance();
+        tvTargetSentence = view.findViewById(R.id.tv_target_sentence);
+        
+        scenarioSelectionContainer = view.findViewById(R.id.scenario_selection_container);
+        chatMainLayout = view.findViewById(R.id.chat_main_layout);
+
+        initMockData();
+        setupScenarioSelection(view);
 
         recordButton.setOnClickListener(v -> startSpeechToText());
+    }
 
-        if (lessonId != null && !currentStepId.isEmpty()) {
-            loadStep(currentStepId);
+    private void setupScenarioSelection(View view) {
+        view.findViewById(R.id.card_scenario_1).setOnClickListener(v -> startScenario("sc1_step1"));
+        view.findViewById(R.id.card_scenario_2).setOnClickListener(v -> startScenario("sc2_step1"));
+    }
+
+    private void startScenario(String startStepId) {
+        scenarioSelectionContainer.setVisibility(View.GONE);
+        chatMainLayout.setVisibility(View.VISIBLE);
+        chatContainer.removeAllViews();
+        loadStep(startStepId);
+    }
+
+    private void initMockData() {
+        mockData = new HashMap<>();
+
+        // --- SCENARIO 1: DINING AT A RESTAURANT ---
+        ST5_SimulationOption sc1_1_1 = new ST5_SimulationOption("Hello, I would like a table for two, please.", true, "Certainly! Right this way. Here are your menus.", "sc1_step2");
+        ST5_SimulationOption sc1_1_2 = new ST5_SimulationOption("Hi, do you have any free tables for one person?", true, "Yes, we do. Please follow me to your table.", "sc1_step2");
+        mockData.put("sc1_step1", new ST5_SimulationStep("Welcome! Do you have a reservation?", Arrays.asList(sc1_1_1, sc1_1_2)));
+
+        ST5_SimulationOption sc1_2_1 = new ST5_SimulationOption("I'll have the grilled chicken and a glass of water.", true, "Excellent choice. Would you like any dessert later?", "sc1_step3");
+        ST5_SimulationOption sc1_2_2 = new ST5_SimulationOption("Could I just have a salad and an orange juice, please?", true, "Of course. I'll bring your drink first.", "sc1_step3");
+        mockData.put("sc1_step2", new ST5_SimulationStep("Are you ready to order, or do you need a few more minutes?", Arrays.asList(sc1_2_1, sc1_2_2)));
+
+        ST5_SimulationOption sc1_3_1 = new ST5_SimulationOption("No, thank you. Could I have the bill, please?", true, "Certainly. I'll be right back with the bill.", "end");
+        mockData.put("sc1_step3", new ST5_SimulationStep("How was your meal? Would you like to see the dessert menu?", Arrays.asList(sc1_3_1)));
+
+        // --- SCENARIO 2: SHOPPING FOR SOUVENIRS ---
+        ST5_SimulationOption sc2_1_1 = new ST5_SimulationOption("Hi, how much is this beautiful wooden statue?", true, "This one is $25. It's handmade by local artists.", "sc2_step2");
+        ST5_SimulationOption sc2_1_2 = new ST5_SimulationOption("Excuse me, do you have this t-shirt in a larger size?", true, "Let me check... Yes, we have it in Large and XL.", "sc2_step2");
+        mockData.put("sc2_step1", new ST5_SimulationStep("Hello! Feel free to look around. Let me know if you need anything.", Arrays.asList(sc2_1_1, sc2_1_2)));
+
+        ST5_SimulationOption sc2_2_1 = new ST5_SimulationOption("That's a bit expensive. Can you give me a discount?", true, "Since you are buying two, I can give them to you for $40.", "sc2_step3");
+        ST5_SimulationOption sc2_2_2 = new ST5_SimulationOption("Okay, I'll take it. Do you accept credit cards?", true, "Yes, we accept all major credit cards and cash.", "sc2_step3");
+        mockData.put("sc2_step2", new ST5_SimulationStep("It's one of our best-sellers! Are you interested in buying it?", Arrays.asList(sc2_2_1, sc2_2_2)));
+
+        ST5_SimulationOption sc2_3_1 = new ST5_SimulationOption("Perfect, here is my card. Thank you!", true, "Thank you! Here is your receipt. Have a great day!", "end");
+        mockData.put("sc2_step3", new ST5_SimulationStep("Great! I'll wrap this up for you. Anything else today?", Arrays.asList(sc2_3_1)));
+
+        mockData.put("end", new ST5_SimulationStep("Thank you for visiting! Hope to see you again.", null));
+    }
+
+    private void loadStep(String stepId) {
+        if (stepId == null || stepId.isEmpty() || stepId.equals("end")) {
+            addBotMessage("Well done! You've completed the simulation.", false);
+            optionsContainer.setVisibility(View.GONE);
+            recordingContainer.setVisibility(View.GONE);
+            
+            MaterialButton btnBack = new MaterialButton(requireContext());
+            btnBack.setText("Return to Scenarios");
+            btnBack.setOnClickListener(v -> {
+                chatMainLayout.setVisibility(View.GONE);
+                scenarioSelectionContainer.setVisibility(View.VISIBLE);
+            });
+            optionsContainer.removeAllViews();
+            optionsContainer.addView(btnBack);
+            optionsContainer.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        ST5_SimulationStep step = mockData.get(stepId);
+        if (step != null) {
+            displayStep(step);
+        }
+    }
+
+    private void displayStep(ST5_SimulationStep step) {
+        if (!isAdded()) return;
+        addBotMessage(step.getDialogue(), true);
+        optionsContainer.removeAllViews();
+        if (step.getOptions() != null) {
+            for (ST5_SimulationOption option : step.getOptions()) {
+                MaterialButton button = new MaterialButton(requireContext());
+                button.setText(option.getText());
+                button.setAllCaps(false);
+                button.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0, 8, 0, 8);
+                button.setLayoutParams(params);
+                button.setOnClickListener(v -> handleOptionClick(option));
+                optionsContainer.addView(button);
+            }
+            fadeInView(optionsContainer);
         }
     }
 
@@ -117,11 +202,16 @@ public class ST5_LessonSimulationFragment extends Fragment {
             if(typingIndicator != null) chatContainer.removeView(typingIndicator);
             addBotMessage(selectedOption.getResponse(), true);
             nextStepIdAfterRecording = selectedOption.getNextStep();
+            
+            if (tvTargetSentence != null) {
+                tvTargetSentence.setText(selectedOption.getText());
+            }
             recordButton.setTag(selectedOption.getText());
+            
             fadeInView(recordingContainer);
         }, 1200);
     }
-    
+
     private View addTypingIndicator() {
         if (!isAdded()) return null;
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -136,8 +226,8 @@ public class ST5_LessonSimulationFragment extends Fragment {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "en-US");
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...");
+        String targetText = tvTargetSentence != null ? tvTargetSentence.getText().toString() : "";
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Repeat: " + targetText);
         try {
             speechResultLauncher.launch(intent);
             recordButton.setText("Listening...");
@@ -147,56 +237,19 @@ public class ST5_LessonSimulationFragment extends Fragment {
         }
     }
 
-    private void loadStep(String stepId) {
-        if (stepId == null || stepId.isEmpty()) {
-            addBotMessage("You've completed the simulation!", false);
-            optionsContainer.setVisibility(View.GONE);
-            return;
-        }
-        db.collection("journey_content").document(lessonId)
-                .collection("simulation").document(stepId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (!isAdded()) return;
-                    if (documentSnapshot.exists()) {
-                        ST5_SimulationStep step = documentSnapshot.toObject(ST5_SimulationStep.class);
-                        if (step != null) {
-                            displayStep(step);
-                        }
-                    }
-                });
-    }
-
-    private void displayStep(ST5_SimulationStep step) {
-        if (!isAdded()) return;
-        addBotMessage(step.getDialogue(), true);
-        optionsContainer.removeAllViews();
-        if (step.getOptions() != null) {
-            for (ST5_SimulationOption option : step.getOptions()) {
-                MaterialButton button = new MaterialButton(requireContext());
-                button.setText(option.getText());
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.setMargins(0, 8, 0, 8);
-                button.setLayoutParams(params);
-                button.setOnClickListener(v -> handleOptionClick(option));
-                optionsContainer.addView(button);
-            }
-            fadeInView(optionsContainer);
-        }
-    }
-
     private void displayRecognitionResult(String recognized, String correct) {
         if (!isAdded()) return;
         recognitionResultText.setVisibility(View.VISIBLE);
         SpannableString spannable = new SpannableString(recognized);
         String[] recognizedWords = recognized.toLowerCase().split("\\s+");
-        String[] correctWords = correct.toLowerCase().split("\\s+");
+        String cleanCorrect = correct.replaceAll("[^a-zA-Z ]", "").toLowerCase();
+        String[] correctWords = cleanCorrect.split("\\s+");
 
         int lastIndex = 0;
         for (int i = 0; i < recognizedWords.length; i++) {
-            int color = ContextCompat.getColor(requireContext(), R.color.red_error);
+            int color = ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark);
             if (i < correctWords.length && recognizedWords[i].equalsIgnoreCase(correctWords[i])) {
-                color = ContextCompat.getColor(requireContext(), R.color.green_correct);
+                color = ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark);
             }
             int start = recognized.toLowerCase().indexOf(recognizedWords[i], lastIndex);
             if (start != -1) {
@@ -214,6 +267,10 @@ public class ST5_LessonSimulationFragment extends Fragment {
         View botBubble = inflater.inflate(R.layout.st5_chat_bubble_bot, chatContainer, false);
         TextView messageText = botBubble.findViewById(R.id.chat_bubble_text);
         ImageButton speakButton = botBubble.findViewById(R.id.btn_speak_bot_message);
+        ImageView avatar = botBubble.findViewById(R.id.iv_avatar_bot);
+        
+        avatar.setImageResource(R.drawable.st5_waiter);
+        
         messageText.setText(text);
 
         if (canSpeak) {

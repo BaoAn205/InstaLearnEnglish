@@ -2,18 +2,26 @@ package com.example.instalearnenglish.feature.home.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.instalearnenglish.feature.home.HomeActivity;
 import com.example.instalearnenglish.feature.home.auth.LoginActivity;
 import com.example.instalearnenglish.feature.home.databinding.FeatureHomeProfileBinding;
 import com.example.instalearnenglish.feature.home.tools.DictionaryActivity;
 import com.example.instalearnenglish.feature.home.utils.MusicManager;
+import com.example.instalearnenglish.feature.home.adapter.SavedItemAdapter;
+import com.example.instalearnenglish.feature.home.model.SavedItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.example.instalearnenglish.feature.home.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -30,8 +38,25 @@ public class ProfileActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        setupArchiveLinks();
         setupBottomNavigation();
         setupLogoutButton();
+    }
+
+    private void setupArchiveLinks() {
+        binding.tvSavedTipsLink.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ArchiveListActivity.class);
+            intent.putExtra("EXTRA_TYPE", "TIP");
+            intent.putExtra("EXTRA_TITLE", "Saved Travel Tips");
+            startActivity(intent);
+        });
+
+        binding.tvSavedVocabLink.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ArchiveListActivity.class);
+            intent.putExtra("EXTRA_TYPE", "VOCAB");
+            intent.putExtra("EXTRA_TITLE", "Saved Vocabulary");
+            startActivity(intent);
+        });
     }
 
     @Override
@@ -69,24 +94,25 @@ public class ProfileActivity extends AppCompatActivity {
                     Long dayStreak = documentSnapshot.getLong("dayStreak");
                     binding.tvDayStreak.setText(dayStreak != null ? String.valueOf(dayStreak) : "1");
 
+                    Long achievements = documentSnapshot.getLong("achievements");
+                    binding.tvAchievements.setText(achievements != null ? String.valueOf(achievements) : "0");
+
                 } else {
                     binding.tvUserName.setText("Traveler");
                     binding.tvCurrentStation.setText("1");
                     binding.tvDayStreak.setText("1");
+                    binding.tvAchievements.setText("0");
                 }
             })
             .addOnFailureListener(e -> {
                 Toast.makeText(ProfileActivity.this, "Failed to load profile data.", Toast.LENGTH_SHORT).show();
-                binding.tvUserName.setText("Traveler");
-                binding.tvCurrentStation.setText("-");
-                binding.tvDayStreak.setText("-");
             });
     }
 
     private void setupLogoutButton() {
         binding.btnLogout.setOnClickListener(v -> {
             mAuth.signOut();
-            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
             goToLogin();
         });
     }

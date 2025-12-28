@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Pro Packing Tips"
+        android:text="Dining &amp; Shopping Tips"
         android:textColor="#673AB7"
         android:textSize="30sp"
         android:textStyle="bold"

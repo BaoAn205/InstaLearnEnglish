@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +14,6 @@
         android:theme="@style/Theme.InstaLearnEnglish"
         android:usesCleartextTraffic="true">
 
-        <!-- DUY NHẤT HomeActivity của feature:home làm Launcher -->
         <activity
             android:name="com.example.instalearnenglish.feature.home.HomeActivity"
             android:exported="true"
@@ -23,9 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Các Activity khác đã được di dời sang feature:home, 
-             xóa bỏ khai báo ở đây để tránh xung đột Namespace -->
 
     </application>
 

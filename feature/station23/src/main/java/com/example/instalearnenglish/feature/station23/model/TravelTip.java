@@ -4,11 +4,13 @@ public class TravelTip {
     private final int iconResId;
     private final String title;
     private final String content;
+    private final String vietnameseMeaning;
 
-    public TravelTip(int iconResId, String title, String content) {
+    public TravelTip(int iconResId, String title, String content, String vietnameseMeaning) {
         this.iconResId = iconResId;
         this.title = title;
         this.content = content;
+        this.vietnameseMeaning = vietnameseMeaning;
     }
 
     public int getIconResId() {
@@ -21,5 +23,9 @@ public class TravelTip {
 
     public String getContent() {
         return content;
+    }
+
+    public String getVietnameseMeaning() {
+        return vietnameseMeaning;
     }
 }

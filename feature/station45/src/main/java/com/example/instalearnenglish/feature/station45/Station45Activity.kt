@@ -22,7 +22,7 @@ class Station45Activity : AppCompatActivity() {
             setupToolbar(level)
             setupViewPager()
         } catch (e: Exception) {
-            Toast.makeText(this, "Lỗi nạp bài học Trạm 4/5: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error loading Station 4/5: ${e.message}", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
@@ -30,7 +30,7 @@ class Station45Activity : AppCompatActivity() {
     private fun setupToolbar(level: Int) {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.title = if (level == 4) "Trạm 4: Khách sạn" else "Trạm 5: Ăn uống"
+        binding.toolbar.title = if (level == 4) "Station 4: Hotel" else "Station 5: Dining & Shopping"
         binding.toolbar.setNavigationOnClickListener { 
             val intent = Intent()
             intent.setClassName(this, "com.example.instalearnenglish.feature.home.HomeActivity")
