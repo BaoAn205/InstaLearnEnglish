@@ -52,12 +52,9 @@ public class ST4_LessonTipsFragment extends Fragment {
 
         loadTips();
 
-        // Pass the TTS instance to the adapter
         ST4_TipsPagerAdapter adapter = new ST4_TipsPagerAdapter(tipList, tts);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(3);
-
-        // Apply the DepthPageTransformer for a cool 3D effect
         viewPager.setPageTransformer(new DepthPageTransformer());
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -68,7 +65,6 @@ public class ST4_LessonTipsFragment extends Fragment {
             }
         });
 
-        // Set initial progress text
         tvTipProgress.setText("1 / " + tipList.size());
     }
 
@@ -83,20 +79,75 @@ public class ST4_LessonTipsFragment extends Fragment {
 
     private void loadTips() {
         tipList = new ArrayList<>();
-        tipList.add(new Tip("The Rolling Method", "Rolling your clothes instead of folding them saves a lot of space in your suitcase and helps reduce wrinkles.", R.drawable.ic_rolling_clothes));
-        tipList.add(new Tip("100ml Liquid Rule", "All liquids, aerosols, and gels must be in containers of no more than 100ml and placed in a clear plastic bag.", R.drawable.ic_liquid_rule));
-        tipList.add(new Tip("Battery Safety", "Power banks and devices with lithium batteries must be in your hand luggage for flight safety.", R.drawable.ic_battery_safety));
-        tipList.add(new Tip("Digital Documents", "Scan or take photos of your passport and important documents. Save them on your phone and in the cloud.", R.drawable.ic_digital_docs));
-        tipList.add(new Tip("Solid Toiletries", "Use solid shampoo, conditioner, and toothpaste bars to save space and avoid liquid restrictions.", R.drawable.ic_solid_toiletries));
-        tipList.add(new Tip("Empty Water Bottle", "Bring an empty water bottle to refill after passing security to save money and stay hydrated.", R.drawable.ic_water_bottle));
-        tipList.add(new Tip("Snacks for the Flight", "Pack a few non-perishable snacks for the plane or long waiting times.", R.drawable.ic_snacks));
-        tipList.add(new Tip("Universal Adapter", "Instead of multiple chargers, a universal travel adapter is compact and works in most countries.", R.drawable.ic_adapter));
-        tipList.add(new Tip("First-Aid Kit", "Prepare a small first-aid kit with essentials like band-aids and pain relievers.", R.drawable.ic_first_aid));
-        tipList.add(new Tip("Use Shoe Space", "Stuff small items like socks, underwear, or chargers inside your shoes to maximize every inch of space.", R.drawable.ic_shoe_space));
-        tipList.add(new Tip("Wear Your Heaviest Items", "Wear your bulkiest items, like boots and heavy coats, on the plane to save significant space and weight in your luggage.", R.drawable.ic_heavy_items));
-        tipList.add(new Tip("Prevent Liquid Spills", "Place a small piece of plastic wrap over the opening of liquid bottles before screwing the cap on to create a seal and prevent leaks.", R.drawable.ic_liquid_rule));
-        tipList.add(new Tip("Leave Space for Souvenirs", "Don't pack to 100% capacity on the way there. Leave some extra space in your luggage for souvenirs and gifts.", R.drawable.ic_souvenirs));
-        tipList.add(new Tip("Dryer Sheet Freshness", "Place a dryer sheet in your suitcase. It weighs nothing and helps keep your clothes smelling fresh throughout the trip.", R.drawable.ic_dryer_sheet));
-        tipList.add(new Tip("Check Baggage Allowance", "Before packing, always check your airline’s website for their specific baggage allowance to avoid expensive surprise fees at the airport.", R.drawable.ic_baggge_allowance));
+        
+        // 1. Language: Polite Requests
+        tipList.add(new Tip(
+            "Polite Requests", 
+            "Instead of saying 'I want a towel', use 'Could I have an extra towel, please?'. It sounds much more polite to hotel staff.", 
+            "Thay vì nói 'I want...' (Tôi muốn), hãy dùng 'Could I have...' (Tôi có thể có... không?). Cách này nghe lịch sự hơn nhiều đối với nhân viên khách sạn.", 
+            R.drawable.st4_tip_polite));
+
+        // 2. Language: Double vs Twin
+        tipList.add(new Tip(
+            "Double vs. Twin Room", 
+            "Be careful! A 'Double Room' has one large bed for two people, while a 'Twin Room' has two separate single beds.", 
+            "Hãy cẩn thận! 'Double Room' là phòng có một giường lớn cho 2 người, trong khi 'Twin Room' có hai giường đơn tách biệt.", 
+            R.drawable.st4_tip_beds));
+
+        // 3. Language: Complimentary
+        tipList.add(new Tip(
+            "Meaning of 'Complimentary'", 
+            "When you see 'Complimentary' on water or snacks in your room, it means they are FREE of charge.", 
+            "Khi bạn thấy từ 'Complimentary' trên nước uống hoặc đồ ăn nhẹ trong phòng, nó có nghĩa là chúng MIỄN PHÍ.", 
+            R.drawable.st4_tip_free));
+
+        // 4. Language: Describing Issues
+        tipList.add(new Tip(
+            "Describing Room Issues", 
+            "To complain politely, use: 'There seems to be a problem with the AC' instead of 'The AC is broken'.", 
+            "Để phàn nàn một cách lịch sự, hãy dùng: 'There seems to be a problem with...' (Có vẻ như có vấn đề với...) thay vì nói thẳng là nó bị hỏng.", 
+            R.drawable.st4_tip_issues));
+
+        // 5. Language: Checking in
+        tipList.add(new Tip(
+            "Checking In", 
+            "When arriving, say: 'I have a reservation under the name of [Your Name]'. This is the standard way to start your check-in.", 
+            "Khi đến nơi, hãy nói: 'I have a reservation under the name of...' (Tôi có lời đặt phòng dưới tên là...). đây là cách tiêu chuẩn để bắt đầu thủ tục nhận phòng.", 
+            R.drawable.st4_tip_reserve));
+
+        // 6. Language: Wake-up Call
+        tipList.add(new Tip(
+            "The Wake-up Call", 
+            "If you have an early flight, ask the reception: 'Could I schedule a wake-up call for 6 AM, please?'.", 
+            "Nếu bạn có chuyến bay sớm, hãy hỏi lễ tân: 'Could I schedule a wake-up call for...?' (Tôi có thể đặt dịch vụ gọi báo thức lúc... giờ không?).", 
+            R.drawable.st4_tip_wakeup));
+
+        // 7. General: Using the Safe
+        tipList.add(new Tip(
+            "Store Your Valuables", 
+            "Always use the in-room safe for your 'valuables' (passport, cash, jewelry). Don't leave them out in the open.", 
+            "Luôn sử dụng két sắt trong phòng cho 'valuables' (đồ giá trị) như hộ chiếu, tiền mặt. Đừng để chúng ở ngoài.", 
+            R.drawable.st4_tip_safe));
+
+        // 8. Language: Late Check-out
+        tipList.add(new Tip(
+            "Asking for Late Check-out", 
+            "If you need more time, ask: 'Is it possible to have a late check-out?'. Some hotels allow this for free or a small fee.", 
+            "Nếu bạn cần thêm thời gian, hãy hỏi: 'Is it possible to have a late check-out?' (Liệu có thể trả phòng muộn không?). Một số khách sạn cho phép miễn phí hoặc thu phí nhỏ.", 
+            R.drawable.st4_tip_late));
+
+        // 9. Language: Directions inside
+        tipList.add(new Tip(
+            "Finding Facilities", 
+            "To find things inside, ask: 'Where is the [gym/pool/restaurant] located?'. The word 'located' makes you sound more fluent.", 
+            "Để tìm các khu vực bên trong, hãy hỏi: 'Where is the... located?' (Cái... nằm ở đâu?). Dùng từ 'located' sẽ giúp bạn nghe trôi chảy hơn.", 
+            R.drawable.st4_tip_directions));
+
+        // 10. General: Review the Bill
+        tipList.add(new Tip(
+            "Review Your Bill", 
+            "At check-out, always 'review your bill' carefully to ensure there are no extra charges from the mini-bar you didn't use.", 
+            "Khi trả phòng, hãy luôn 'review your bill' (kiểm tra hóa đơn) cẩn thận để đảm bảo không có phí phát sinh từ mini-bar mà bạn không dùng.", 
+            R.drawable.st4_tip_bill));
     }
 }

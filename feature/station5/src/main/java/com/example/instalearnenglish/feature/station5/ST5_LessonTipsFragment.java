@@ -52,12 +52,9 @@ public class ST5_LessonTipsFragment extends Fragment {
 
         loadTips();
 
-        // Pass the TTS instance to the adapter
         ST5_TipsPagerAdapter adapter = new ST5_TipsPagerAdapter(tipList, tts);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(3);
-
-        // Apply the DepthPageTransformer for a cool 3D effect
         viewPager.setPageTransformer(new DepthPageTransformer());
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -68,7 +65,6 @@ public class ST5_LessonTipsFragment extends Fragment {
             }
         });
 
-        // Set initial progress text
         tvTipProgress.setText("1 / " + tipList.size());
     }
 
@@ -83,20 +79,47 @@ public class ST5_LessonTipsFragment extends Fragment {
 
     private void loadTips() {
         tipList = new ArrayList<>();
-        tipList.add(new Tip("The Rolling Method", "Rolling your clothes instead of folding them saves a lot of space in your suitcase and helps reduce wrinkles.", R.drawable.ic_rolling_clothes));
-        tipList.add(new Tip("100ml Liquid Rule", "All liquids, aerosols, and gels must be in containers of no more than 100ml and placed in a clear plastic bag.", R.drawable.ic_liquid_rule));
-        tipList.add(new Tip("Battery Safety", "Power banks and devices with lithium batteries must be in your hand luggage for flight safety.", R.drawable.ic_battery_safety));
-        tipList.add(new Tip("Digital Documents", "Scan or take photos of your passport and important documents. Save them on your phone and in the cloud.", R.drawable.ic_digital_docs));
-        tipList.add(new Tip("Solid Toiletries", "Use solid shampoo, conditioner, and toothpaste bars to save space and avoid liquid restrictions.", R.drawable.ic_solid_toiletries));
-        tipList.add(new Tip("Empty Water Bottle", "Bring an empty water bottle to refill after passing security to save money and stay hydrated.", R.drawable.ic_water_bottle));
-        tipList.add(new Tip("Snacks for the Flight", "Pack a few non-perishable snacks for the plane or long waiting times.", R.drawable.ic_snacks));
-        tipList.add(new Tip("Universal Adapter", "Instead of multiple chargers, a universal travel adapter is compact and works in most countries.", R.drawable.ic_adapter));
-        tipList.add(new Tip("First-Aid Kit", "Prepare a small first-aid kit with essentials like band-aids and pain relievers.", R.drawable.ic_first_aid));
-        tipList.add(new Tip("Use Shoe Space", "Stuff small items like socks, underwear, or chargers inside your shoes to maximize every inch of space.", R.drawable.ic_shoe_space));
-        tipList.add(new Tip("Wear Your Heaviest Items", "Wear your bulkiest items, like boots and heavy coats, on the plane to save significant space and weight in your luggage.", R.drawable.ic_heavy_items));
-        tipList.add(new Tip("Prevent Liquid Spills", "Place a small piece of plastic wrap over the opening of liquid bottles before screwing the cap on to create a seal and prevent leaks.", R.drawable.ic_liquid_rule));
-        tipList.add(new Tip("Leave Space for Souvenirs", "Don't pack to 100% capacity on the way there. Leave some extra space in your luggage for souvenirs and gifts.", R.drawable.ic_souvenirs));
-        tipList.add(new Tip("Dryer Sheet Freshness", "Place a dryer sheet in your suitcase. It weighs nothing and helps keep your clothes smelling fresh throughout the trip.", R.drawable.ic_dryer_sheet));
-        tipList.add(new Tip("Check Baggage Allowance", "Before packing, always check your airline’s website for their specific baggage allowance to avoid expensive surprise fees at the airport.", R.drawable.ic_baggge_allowance));
+        
+        // 1. Language: Polite Ordering
+        tipList.add(new Tip(
+            "Polite Ordering", 
+            "Instead of saying 'I want', use 'Could I have...?' or 'I'd like to order...'. It sounds much more natural and polite.", 
+            "Thay vì nói 'Tôi muốn', hãy dùng 'Tôi có thể lấy...?' hoặc 'Tôi muốn gọi món...'. Cách này nghe tự nhiên và lịch sự hơn nhiều.", 
+            R.drawable.st5_tip_order));
+
+        // 2. Language: Asking for Sizes
+        tipList.add(new Tip(
+            "Asking for Sizes", 
+            "To check for fit, ask: 'Do you have this in a larger/smaller size?' or 'Can I try this on in a medium?'.", 
+            "Để hỏi về kích cỡ, hãy nói: 'Bạn có cái này size lớn hơn/nhỏ hơn không?' hoặc 'Tôi có thể thử cái này size M không?'.", 
+            R.drawable.st5_tip_size));
+
+        // 3. Language: Natural Price Inquiry
+        tipList.add(new Tip(
+            "Price Inquiry", 
+            "Besides 'How much is it?', you can ask 'What's the price of this?' or 'How much does this cost?'.", 
+            "Ngoài câu 'Cái này bao nhiêu tiền?', bạn có thể hỏi 'Giá của cái này là bao nhiêu?' hoặc 'Cái này có giá thế nào?'.", 
+            R.drawable.st5_tip_price));
+
+        // 4. Language: Food Issues
+        tipList.add(new Tip(
+            "Reporting Food Issues", 
+            "If your food is not right, say politely: 'Excuse me, I think this isn't what I ordered' or 'This is a bit cold'.", 
+            "Nếu món ăn có vấn đề, hãy nói lịch sự: 'Xin lỗi, tôi nghĩ đây không phải món tôi gọi' hoặc 'Món này hơi bị nguội'.", 
+            R.drawable.st5_tip_food_issue));
+
+        // 5. General: Receipt Importance
+        tipList.add(new Tip(
+            "Keep Your Receipt", 
+            "Always keep your receipt. You will need it if you want to return an item or get a refund later.", 
+            "Luôn giữ lại biên lai. Bạn sẽ cần nó nếu muốn trả lại hàng hoặc nhận lại tiền sau này.", 
+            R.drawable.st5_tip_receipt));
+
+        // 6. General: Local Flavors
+        tipList.add(new Tip(
+            "Ask for Recommendations", 
+            "Not sure what to eat? Ask the waiter: 'What is the chef's special today?' or 'What do you recommend?'.", 
+            "Bạn không biết nên ăn gì? Hãy hỏi bồi bàn: 'Món đặc biệt hôm nay là gì?' hoặc 'Bạn gợi ý món nào?'.", 
+            R.drawable.st5_tip_recommend));
     }
 }

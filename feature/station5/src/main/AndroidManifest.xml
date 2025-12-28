@@ -12,6 +12,9 @@
         <activity
             android:name=".ST5_VocabDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".ST5_GameHistoryActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

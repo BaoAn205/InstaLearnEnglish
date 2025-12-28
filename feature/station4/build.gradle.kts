@@ -10,7 +10,6 @@ android {
 
     defaultConfig {
         minSdk = 29
-        // targetSdk removed
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,15 +36,17 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("com.google.android.material:material:1.13.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     
     implementation("de.hdodenhof:circleimageview:3.1.0")
 
-    // Add this line for Lottie animations
+    // Khai báo trực tiếp bằng chuỗi để tránh lỗi Catalog nếu Sync chưa xong
     implementation("com.airbnb.android:lottie:5.2.0")
+
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)

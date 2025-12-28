@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ public class ST4_LessonGameFragment extends Fragment {
 
     private RecyclerView gamesRecyclerView;
     private List<ST4_Game> gameList;
+    private Button btnViewHistory;
 
     @Nullable
     @Override
@@ -33,6 +35,8 @@ public class ST4_LessonGameFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         gamesRecyclerView = view.findViewById(R.id.games_recycler_view);
+        btnViewHistory = view.findViewById(R.id.btn_view_history);
+        
         gamesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         loadGames();
@@ -40,26 +44,31 @@ public class ST4_LessonGameFragment extends Fragment {
         ST4_GameAdapter adapter = new ST4_GameAdapter(gameList, game -> {
             if (game.isImplemented()) {
                 Intent intent = new Intent(getActivity(), ST4_GameHostActivity.class);
-                intent.putExtra(ST4_GameHostActivity.EXTRA_GAME_TYPE, game.getType());
-                intent.putExtra(ST4_GameHostActivity.EXTRA_GAME_TITLE, game.getTitle());
+                intent.putExtra("EXTRA_GAME_TYPE", game.getType());
+                intent.putExtra("EXTRA_GAME_TITLE", game.getTitle());
                 startActivity(intent);
             } else {
                 Toast.makeText(getContext(), game.getTitle() + " is coming soon!", Toast.LENGTH_SHORT).show();
             }
         });
         gamesRecyclerView.setAdapter(adapter);
+
+        // Mở màn hình lịch sử
+        btnViewHistory.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ST4_GameHistoryActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void loadGames() {
         gameList = new ArrayList<>();
-        // Using R.raw resource IDs instead of string names
-        gameList.add(new ST4_Game("Packing Luggage", "DRAG_AND_DROP_LUGGAGE", R.raw.game_drag, true));
-        gameList.add(new ST4_Game("Prohibited Items Quiz", "QUIZ_PROHIBITED_ITEMS", R.raw.game_quiz, true));
+        gameList.add(new ST4_Game("The Polite Guest", "POLITE_GUEST", R.raw.game_quiz, true));
+        gameList.add(new ST4_Game("Room Service Master", "ROOM_SERVICE_MASTER", R.raw.game_match, true));
+        gameList.add(new ST4_Game("Word → Image Match", "WORD_IMAGE_MATCH", R.raw.game_match, true));
         gameList.add(new ST4_Game("Guess My Trip", "GUESS_MY_TRIP", R.raw.game_guess, true));
         gameList.add(new ST4_Game("Emoji Packing", "EMOJI_PACKING", R.raw.game_emoji, true));
         gameList.add(new ST4_Game("What’s in My Bag?", "WHATS_IN_MY_BAG", R.raw.game_audio, true));
         gameList.add(new ST4_Game("Forgot Something!", "FORGOT_SOMETHING", R.raw.game_memory, true));
-        gameList.add(new ST4_Game("Word → Image Match", "WORD_IMAGE_MATCH", R.raw.game_match, true));
     }
 
     public static class ST4_Game {

@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F3E5F5"
-    android:padding="8dp">
+    android:padding="16dp">
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/tv_mini_games_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Mini Games Challenge"
-        android:textColor="#673AB7"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:gravity="center_horizontal"
-        android:layout_marginBottom="8dp"/>
+        android:textColor="#4A148C"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/games_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/tv_mini_games_title"
+        android:layout_above="@id/btn_view_history_st5"/>
 
-</LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_view_history_st5"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="8dp"
+        android:text="View Game History"
+        android:textColor="#9C27B0"
+        app:strokeColor="#9C27B0"
+        app:cornerRadius="12dp"
+        android:drawableLeft="@android:drawable/ic_menu_recent_history"
+        app:iconTint="#9C27B0"/>
+
+</RelativeLayout>
