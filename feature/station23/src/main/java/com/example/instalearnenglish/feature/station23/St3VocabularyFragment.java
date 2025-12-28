@@ -1,124 +1,58 @@
 package com.example.instalearnenglish.feature.station23;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.instalearnenglish.feature.station23.adapter.St23VocabularyAdapter;
+import com.example.instalearnenglish.feature.station23.adapter.St3VocabCategoryAdapter;
+import com.example.instalearnenglish.feature.station23.adapter.St3VocabItemAdapter;
+import com.example.instalearnenglish.feature.station23.model.St23VocabCategory;
 import com.example.instalearnenglish.feature.station23.model.St23VocabItem;
+import com.example.instalearnenglish.feature.station23.model.St23VocabProvider;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-// This fragment is almost identical to St23VocabularyFragment, but loads different data.
-public class St3VocabularyFragment extends Fragment implements St23VocabularyAdapter.OnVocabItemInteractionListener, TextToSpeech.OnInitListener {
+public class St3VocabularyFragment extends Fragment implements St3VocabItemAdapter.OnItemClickListener {
 
-    private RecyclerView recyclerView;
-    private St23VocabularyAdapter adapter;
-    private List<St23VocabItem> vocabList;
-    private TextToSpeech tts;
-    private Context mContext;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        mContext = context;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        tts = new TextToSpeech(mContext, this);
-    }
+    private RecyclerView rvCategories;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.st23_fragment_vocabulary, container, false);
-        recyclerView = view.findViewById(R.id.st23_rv_flashcards);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        
-        loadVocabData(); // Load data for Station 3
-        
-        adapter = new St23VocabularyAdapter(mContext, vocabList, this);
-        recyclerView.setAdapter(adapter);
-        return view;
-    }
-
-    private void loadVocabData() {
-        vocabList = new ArrayList<>();
-        vocabList.add(new St23VocabItem("Subway", "Tàu điện ngầm"));
-        vocabList.add(new St23VocabItem("Ticket machine", "Máy bán vé"));
-        vocabList.add(new St23VocabItem("Platform", "Sân ga"));
-        vocabList.add(new St23VocabItem("Map", "Bản đồ"));
-    }
-
-    // --- The rest of the code is for TTS and flip animation, identical to St23VocabularyFragment ---
-
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            int result = tts.setLanguage(Locale.US);
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("TTS", "The Language specified is not supported!");
-            }
-        } else {
-            Log.e("TTS", "Initialization Failed!");
-        }
+        return inflater.inflate(R.layout.st3_fragment_vocabulary, container, false);
     }
 
     @Override
-    public void onSpeakClicked(String textToSpeak) {
-        tts.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        rvCategories = view.findViewById(R.id.st3_rv_categories);
+        rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Find the parent ViewPager that manages the tabs
+        ViewPager2 parentViewPager = requireActivity().findViewById(R.id.viewPager);
+
+        // Load categorized data for Station 3
+        List<St23VocabCategory> categoryList = St23VocabProvider.getStation3CategorizedVocabulary();
+
+        // Create and set the category adapter
+        St3VocabCategoryAdapter categoryAdapter = new St3VocabCategoryAdapter(categoryList, this, parentViewPager);
+        rvCategories.setAdapter(categoryAdapter);
     }
 
     @Override
-    public void onCardClicked(final View cardFront, final View cardBack) {
-        final boolean isShowingFront = cardFront.getAlpha() > 0;
-        final View viewToFlip = isShowingFront ? cardFront : cardBack;
-        final View newView = isShowingFront ? cardBack : cardFront;
-
-        ObjectAnimator flipOut = ObjectAnimator.ofFloat(viewToFlip, "rotationY", 0f, 90f);
-        flipOut.setDuration(250);
-        flipOut.setInterpolator(new AccelerateDecelerateInterpolator());
-
-        final ObjectAnimator flipIn = ObjectAnimator.ofFloat(newView, "rotationY", -90f, 0f);
-        flipIn.setDuration(250);
-        flipIn.setInterpolator(new DecelerateInterpolator());
-
-        flipOut.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                viewToFlip.setAlpha(0f);
-                newView.setAlpha(1f);
-                flipIn.start();
-            }
-        });
-        flipOut.start();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-        }
-        super.onDestroy();
+    public void onItemClick(St23VocabItem item, ImageView sharedImageView) {
+        // For now, just show a Toast. In the future, we can open a detail Activity.
+        Toast.makeText(getContext(), item.getName(), Toast.LENGTH_SHORT).show();
     }
 }

@@ -4,12 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.instalearnenglish.feature.station23.R;
 import com.example.instalearnenglish.feature.station23.model.GameMenuItem;
 
@@ -42,7 +42,8 @@ public class St3GameMenuAdapter extends RecyclerView.Adapter<St3GameMenuAdapter.
     public void onBindViewHolder(@NonNull GameViewHolder holder, int position) {
         GameMenuItem game = gameList.get(position);
         holder.gameTitle.setText(game.getTitle());
-        holder.gameIcon.setImageResource(game.getIconResId());
+        holder.gameIcon.setAnimation(game.getResourceId());
+        holder.gameIcon.playAnimation();
 
         holder.itemView.setOnClickListener(v -> {
             if(listener != null) {
@@ -57,13 +58,14 @@ public class St3GameMenuAdapter extends RecyclerView.Adapter<St3GameMenuAdapter.
     }
 
     static class GameViewHolder extends RecyclerView.ViewHolder {
-        ImageView gameIcon;
+        LottieAnimationView gameIcon;
         TextView gameTitle;
 
         public GameViewHolder(@NonNull View itemView) {
             super(itemView);
-            gameIcon = itemView.findViewById(R.id.st3_iv_game_icon);
-            gameTitle = itemView.findViewById(R.id.st3_tv_game_title);
+            // Use the new IDs from the updated layout
+            gameIcon = itemView.findViewById(R.id.lottie_game_icon);
+            gameTitle = itemView.findViewById(R.id.tv_game_title);
         }
     }
 }
