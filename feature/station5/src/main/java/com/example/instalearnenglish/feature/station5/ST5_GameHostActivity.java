@@ -25,21 +25,29 @@ public class ST5_GameHostActivity extends AppCompatActivity {
         }
 
         // Setup Music
-        int musicResId = R.raw.game_music1;
-        if ("MENU_CATCHER".equals(gameType)) {
+        int musicResId = 0; // Mặc định không có nhạc
+        
+        // Chỉ phát nhạc cho các game cũ, tắt nhạc cho các game Listening của Station 5
+        if ("DRAG_AND_DROP_LUGGAGE".equals(gameType) || "QUIZ_PROHIBITED_ITEMS".equals(gameType) || "GUESS_MY_TRIP".equals(gameType)) {
+            musicResId = R.raw.game_music1;
+        } else if ("EMOJI_PACKING".equals(gameType) || "WHATS_IN_MY_BAG".equals(gameType)) {
             musicResId = R.raw.game_music3;
-        } else if ("PRICE_DETECTIVE".equals(gameType)) {
+        } else if ("FORGOT_SOMETHING".equals(gameType) || "WORD_IMAGE_MATCH".equals(gameType)) {
             musicResId = R.raw.game_music2;
         }
+        
+        // Tắt nhạc cho MENU_CATCHER và PRICE_DETECTIVE bằng cách không gán musicResId
 
-        try {
-            mediaPlayer = MediaPlayer.create(this, musicResId);
-            if (mediaPlayer != null) {
-                mediaPlayer.setLooping(true);
-                mediaPlayer.start();
+        if (musicResId != 0) {
+            try {
+                mediaPlayer = MediaPlayer.create(this, musicResId);
+                if (mediaPlayer != null) {
+                    mediaPlayer.setLooping(true);
+                    mediaPlayer.start();
+                }
+            } catch (Exception e) {
+                Log.e("ST5_GameHost", "Music error: " + e.getMessage());
             }
-        } catch (Exception e) {
-            Log.e("ST5_GameHost", "Music error: " + e.getMessage());
         }
 
         if (savedInstanceState == null) {
